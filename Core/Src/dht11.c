@@ -121,7 +121,7 @@ unsigned char maquinaDeEstados(int cnt, unsigned char val, unsigned char * fin) 
 			if (val == 1){
 				estadoActual = LECTURA;
 				cnt_bit++;
-				if (cnt_bit == 39){
+				if (cnt_bit == 40){
 					estadoActual = FIN;
 					if (cnt < MICROS_26US){
 					// 0 (30 us)
@@ -153,8 +153,11 @@ unsigned char maquinaDeEstados(int cnt, unsigned char val, unsigned char * fin) 
 		case FIN:
 			printf("Entrando en el estado FIN\n");
 			// Lógica de transición para volver al estado inicial (INIT)
-			*fin = 1;
+			// Restaurar estado inicial (siguiente iteración)
 			estadoActual = STOP;
+			cnt_bit = 0;
+
+			*fin = 1;
 			return 7;
 			break;
 
@@ -170,16 +173,15 @@ unsigned char maquinaDeEstados(int cnt, unsigned char val, unsigned char * fin) 
 
 void lectura_Buff(unsigned char* datos, unsigned char* data){
 	unsigned char count = 0;
-	int i = 0;
-	int j = 0;
-	int num = 3;
+	int i = 0; // valor de array
+	int j = 0; // desplazamiento de array
 	unsigned char val = 1;
 	unsigned char val_ant = 1;
 
 	unsigned char num_pin = 0;
 	unsigned char n = 0;
 	unsigned char fin = 0;
-	for (num = 0; num < 8*1000; num ++){
+	for (int num = 0; num < 8*1000; num ++){
 
 		if (fin == 1){
 			// Terminar
