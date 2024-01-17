@@ -1,1067 +1,404 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
-#include "main.h"
+/*
+ * dht11.c
+ *
+ *  Created on: Jan 5, 2024
+ *      Author: pabme
+ */
 #include "cmsis_os.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-#include <unistd.h>
+#include <stdio.h>
 #include "dht11.h"
-#include "FreeRTOS.h"
-#include "timers.h"
-#include "semphr.h"
-/* USER CODE END Includes */
+#include <string.h>
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
+extern TIM_HandleTypeDef htim11;
+extern osEventFlagsId_t flag_Event;
+extern UART_HandleTypeDef huart2;
 
-/* USER CODE END PTD */
+#define MICROS_80US 60
+#define MICROS_50US 30
+#define MICROS_26US 30
+//#define MICROS_70US 2
 
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef htim10;
-TIM_HandleTypeDef htim11;
-
-UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
-
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for myTask02 */
-osThreadId_t myTask02Handle;
-const osThreadAttr_t myTask02_attributes = {
-  .name = "myTask02",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask03 */
-osThreadId_t myTask03Handle;
-const osThreadAttr_t myTask03_attributes = {
-  .name = "myTask03",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask04 */
-osThreadId_t myTask04Handle;
-const osThreadAttr_t myTask04_attributes = {
-  .name = "myTask04",
-  .stack_size = 1024 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask05 */
-osThreadId_t myTask05Handle;
-const osThreadAttr_t myTask05_attributes = {
-  .name = "myTask05",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask06 */
-osThreadId_t myTask06Handle;
-const osThreadAttr_t myTask06_attributes = {
-  .name = "myTask06",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask07 */
-osThreadId_t myTask07Handle;
-const osThreadAttr_t myTask07_attributes = {
-  .name = "myTask07",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask08Queue */
-osThreadId_t myTask08QueueHandle;
-const osThreadAttr_t myTask08Queue_attributes = {
-  .name = "myTask08Queue",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask09QueueRX */
-osThreadId_t myTask09QueueRXHandle;
-const osThreadAttr_t myTask09QueueRX_attributes = {
-  .name = "myTask09QueueRX",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask10_contro */
-osThreadId_t myTask10_controHandle;
-const osThreadAttr_t myTask10_contro_attributes = {
-  .name = "myTask10_contro",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask11 */
-osThreadId_t myTask11Handle;
-const osThreadAttr_t myTask11_attributes = {
-  .name = "myTask11",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for myTask12 */
-osThreadId_t myTask12Handle;
-const osThreadAttr_t myTask12_attributes = {
-  .name = "myTask12",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* USER CODE BEGIN PV */
-osEventFlagsId_t flag_Event;
-uint8_t mode = 0;
-SemaphoreHandle_t delaySemaphore;
-osMessageQueueId_t myQueue; // Mensaje para mandar datos de task8 -> task9
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_USART1_UART_Init(void);
-static void MX_USART2_UART_Init(void);
-static void MX_TIM10_Init(void);
-static void MX_TIM11_Init(void);
-void StartDefaultTask(void *argument);
-void StartTask02(void *argument);
-void StartTask03(void *argument);
-void StartTask04(void *argument);
-void StartTask05(void *argument);
-void StartTask06(void *argument);
-void StartTask07(void *argument);
-void StartTask08Queue(void *argument);
-void StartTask09QueueRX(void *argument);
-void StartTask10_controlQUEUE(void *argument);
-void StartTask11(void *argument);
-void StartTask12(void *argument);
-
-/* USER CODE BEGIN PFP */
-void DHT11_Delay_f(uint32_t uSeg);
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	mode ++;
-	if(mode == 3){
-		mode = 0;
-	}
-}
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
-  MX_TIM10_Init();
-  MX_TIM11_Init();
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Init scheduler */
-  osKernelInitialize();
-
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
-
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  // Crear una cola de mensajes con capacidad para 10 mensajes, cada uno de 4 bytes
-  	  myQueue = osMessageQueueNew(10, 4, NULL);
-  /* USER CODE END RTOS_QUEUES */
-
-  /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-
-  /* creation of myTask02 */
-  myTask02Handle = osThreadNew(StartTask02, NULL, &myTask02_attributes);
-
-  /* creation of myTask03 */
-  myTask03Handle = osThreadNew(StartTask03, NULL, &myTask03_attributes);
-
-  /* creation of myTask04 */
-  myTask04Handle = osThreadNew(StartTask04, NULL, &myTask04_attributes);
-
-  /* creation of myTask05 */
-  myTask05Handle = osThreadNew(StartTask05, NULL, &myTask05_attributes);
-
-  /* creation of myTask06 */
-  myTask06Handle = osThreadNew(StartTask06, NULL, &myTask06_attributes);
-
-  /* creation of myTask07 */
-  myTask07Handle = osThreadNew(StartTask07, NULL, &myTask07_attributes);
-
-  /* creation of myTask08Queue */
-  myTask08QueueHandle = osThreadNew(StartTask08Queue, NULL, &myTask08Queue_attributes);
-
-  /* creation of myTask09QueueRX */
-  myTask09QueueRXHandle = osThreadNew(StartTask09QueueRX, NULL, &myTask09QueueRX_attributes);
-
-  /* creation of myTask10_contro */
-  myTask10_controHandle = osThreadNew(StartTask10_controlQUEUE, NULL, &myTask10_contro_attributes);
-
-  /* creation of myTask11 */
-  myTask11Handle = osThreadNew(StartTask11, NULL, &myTask11_attributes);
-
-  /* creation of myTask12 */
-  myTask12Handle = osThreadNew(StartTask12, NULL, &myTask12_attributes);
-
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
-
-  /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
-  /* USER CODE END RTOS_EVENTS */
-
-  /* Start scheduler */
-  osKernelStart();
-
-  /* We should never get here as control is now taken by the scheduler */
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+///// ------------------
+void bit_value (int num, int * i, int *j){//, unsigned char * value){
+    *i = num / 8;
+    *j = num % 8;
 }
 
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-  /** Configure the main internal regulator output voltage
-  */
-  __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-
-/**
-  * @brief TIM10 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM10_Init(void)
-{
-
-  /* USER CODE BEGIN TIM10_Init 0 */
-
-  /* USER CODE END TIM10_Init 0 */
-
-  /* USER CODE BEGIN TIM10_Init 1 */
-
-  /* USER CODE END TIM10_Init 1 */
-  htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 84-1;
-  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 65000-1;
-  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM10_Init 2 */
-
-  /* USER CODE END TIM10_Init 2 */
-
-}
-
-/**
-  * @brief TIM11 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM11_Init(void)
-{
-
-  /* USER CODE BEGIN TIM11_Init 0 */
-
-  /* USER CODE END TIM11_Init 0 */
-
-  /* USER CODE BEGIN TIM11_Init 1 */
-
-  /* USER CODE END TIM11_Init 1 */
-  htim11.Instance = TIM11;
-  htim11.Init.Prescaler = 1-1;
-  htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim11.Init.Period = 84-1;
-  htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM11_Init 2 */
-
-  /* USER CODE END TIM11_Init 2 */
-
-}
-
-/**
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART1_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART1_Init 0 */
-
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
-
-}
-
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DHT11_GPIO_Port, DHT11_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PC0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : DHT11_Pin */
-  GPIO_InitStruct.Pin = DHT11_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
-}
-
-/* USER CODE BEGIN 4 */
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef * huart1){
-
-	//HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart1){
-	//HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-}
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if (htim == &htim11){
-		osEventFlagsSet(flag_Event, 0x01);
-		HAL_TIM_Base_Stop_IT(&htim11);
-	}
-}
-
-void DHT11_Delay_f(uint32_t uSeg) {
-
-	 htim11.Instance = TIM11;
-	  htim11.Init.Prescaler = (uSeg - 44) -1;
-	  htim11.Init.Period = 84-1;
-	  if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  // Deshabilitar la interrupción de desbordamiento en TIM11 usando HAL
-	  __HAL_TIM_DISABLE_IT(&htim11, TIM_IT_UPDATE);
-	  // Borrar la bandera de desbordamiento en TIM11 usando HAL
-	  __HAL_TIM_CLEAR_FLAG(&htim11, TIM_FLAG_UPDATE);
-	  __HAL_TIM_SET_COUNTER(&htim11, 0);
-
-	osEventFlagsClear(flag_Event, 0x01); // Iniciar valor de flag
-
-	HAL_TIM_Base_Start_IT(&htim11); // iniciar timer
-
-	osEventFlagsWait(flag_Event, 0x01, osFlagsWaitAll, osWaitForever);
-
-	// Detener el temporizador
-	HAL_TIM_Base_Stop_IT(&htim11);
-
-	// Limpiar el flag de evento
-	osEventFlagsClear(flag_Event, 0x01);
-}
-
-void Delay_us(uint32_t us)
-{
-    // Convertir microsegundos a milisegundos
-    uint32_t ms = (us + 999) / 1000;
-
-    // Esperar en milisegundos
-    vTaskDelay(ms);
-}
-
-void delayWithNop(uint32_t delayTime) {
-	delayTime = delayTime*7;
-
-	for (uint32_t i = 0; i < delayTime; ++i) {
-        __NOP();
+unsigned char datos_value ( unsigned char datos, int j){
+    unsigned char value = datos;
+    value = (value & (0x80 >> j));
+    if (value != 0){
+        value = 1;
+    }else {
+        value = 0;
     }
+    return value;
 }
 
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
-{
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END 5 */
-}
-
-/* USER CODE BEGIN Header_StartTask02 */
-/**
-* @brief Function implementing the myTask02 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void *argument)
-{
-  /* USER CODE BEGIN StartTask02 */
-  /* Infinite loop */
-	uint8_t bufferEnvio[5] = "HOLA";
-	uint16_t tam = 5;
-	__HAL_UART_ENABLE_IT(&huart1, UART_IT_TC);
-  for(;;)
-  {
-	  //HAL_UART_Transmit_IT(&huart1, bufferEnvio, tam);
-    osDelay(1000);
-  }
-  /* USER CODE END StartTask02 */
-}
-
-/* USER CODE BEGIN Header_StartTask03 */
-/**
-* @brief Function implementing the myTask03 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask03 */
-void StartTask03(void *argument)
-{
-  /* USER CODE BEGIN StartTask03 */
-  /* Infinite loop */
-	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-	uint8_t rx_buff [1] ;
-	uint16_t tam = 1;
-  for(;;)
-  {
-	  //HAL_UART_Receive_IT(&huart1, rx_buff, tam);
-     osDelay(1000);
-  }
-  /* USER CODE END StartTask03 */
-}
-
-/* USER CODE BEGIN Header_StartTask04 */
-/**
-* @brief Function implementing the myTask04 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask04 */
-void StartTask04(void *argument)
-{
-  /* USER CODE BEGIN StartTask04 */
-  /* Infinite loop */
-	uint8_t buff_erre[2] = "XX";
-		uint8_t humidity, temperature;
-		uint8_t buff_print[24] ;
-		flag_Event = osEventFlagsNew(NULL);
-
-		// Crear variable y cargar valores inicialies de puerto
-		DHT11_TypeDef dht11;
-		dht11.GPIO_Port = DHT11_GPIO_Port;  // Reemplaza 'x' con el puerto GPIO que estás utilizando
-		dht11.GPIO_Pin = DHT11_Pin;  // Reemplaza 'x' con el número del pin GPIO que estás utilizando
-		DHT11_Init(&dht11);
-
-		osDelay(1000);
-  for(;;)
-  {
-	  //HAL_UART_Transmit(&huart2, buff_print, 23, 10U);
-	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-
-	  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	  	 osDelay(1000);
-	  	 HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-	  	 osDelay(1000);
-//	  	 if (DHT11_ReadData_prueba(&dht11, &humidity, &temperature) == HAL_OK) {
-//	  		// Los datos se leyeron correctamente
-//	  		// Utiliza las variables 'humidity' y 'temperature' según tus necesidades
-//
-//	   		  formatSensorData(buff_print,  humidity,  temperature);
-//
-//	  		  //HAL_UART_Transmit(&huart2, buff_print, 23, 10U);
-//	  	  } else {
-//	  		// Hubo un error al leer los datos del sensor
-//	  		//HAL_UART_Transmit(&huart2, buff_erre, 2, 10U);
-//	  	  }
-
-    osDelay(1);
-  }
-  /* USER CODE END StartTask04 */
-}
-
-/* USER CODE BEGIN Header_StartTask05 */
-/**
-* @brief Function implementing the myTask05 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask05 */
-void StartTask05(void *argument)
-{
-  /* USER CODE BEGIN StartTask05 */
-  /* Infinite loop */
-  for(;;)
-  {
-
-	  if (mode == 0){
-	  		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  		  osDelay(100);
-	  	  }
-	  	  if (mode == 1){
-	  		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  		  		  osDelay(1000);
-	  	  }
-	  	  if (mode == 2){
-	  		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  		  osDelay(2000);
-	  	  }
-
-  }
-  /* USER CODE END StartTask05 */
-}
-
-/* USER CODE BEGIN Header_StartTask06 */
-/**
-* @brief Function implementing the myTask06 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask06 */
-void StartTask06(void *argument)
-{
-  /* USER CODE BEGIN StartTask06 */
+// Enumeración para representar los estados
+enum Estados {
+    STOP, // antes de empezar
+    INIT_1, // Bajo de 80 us
+    INIT_2, // Alto de 80 us
+    LECTURA, // Lectura 50 us
+    BIT, // Cual bit? (0 - 1) -> (28us - 70us)
+    FIN
+};
 
 
-  /* Infinite loop */
+unsigned char maquinaDeEstados(int cnt, unsigned char val, unsigned char * fin) {
+	// Variable estática para almacenar el estado
+	static enum Estados estadoActual = STOP;
+	static unsigned char cnt_bit = 0;
 
-	  char uart_buf[50];
-	  int uart_buf_len;
-	  uint16_t timer_val;
-	  uint16_t timer_val2;
-	  // Say something
-	    uart_buf_len = sprintf(uart_buf, "Timer Test\r\n");
+	// Return 1-> STOP
+	// Return 2-> INIT_1
+	// Return 3-> INIT_2
+	// Return 4-> LECTURA
+	// Return 5-> BIT_0
+	// Return 6-> BIT_1
+	// Return 7-> STOP
+	// Return 8-> default
 
-	    //HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
+	// Máquina de estados: transición y procesamiento
+	switch (estadoActual) {
+		case STOP:
+			//printf("Entrando en el estado STOP\n");
 
-	    // Start timer
-	    HAL_TIM_Base_Start(&htim10);
-  for(;;)
-  {
-	  	  osDelay(1000);
-	  	HAL_TIM_Base_Start(&htim10);
-	  	  timer_val = __HAL_TIM_GET_COUNTER(&htim10);
+			// 1 -> 0
 
-        // Wait for 50 ms
-        //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-    	//DHT11_Delay_f(100);
-    	delayWithNop(7*20);
-    	//osDelay(1);
-    	//Delay_us(1);
-        //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-
-        // Get time elapsed
-        timer_val = __HAL_TIM_GET_COUNTER(&htim10) - timer_val;
-        timer_val2 = __HAL_TIM_GET_COUNTER(&htim11);
-        // Show elapsed time
-        HAL_TIM_Base_Stop_IT(&htim10);
-        uart_buf_len = sprintf(uart_buf, "%u us\r\n", timer_val);
-        //HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
-        uart_buf_len = sprintf(uart_buf, "CNT:%u | ARR 83\r\n\n", timer_val2);
-        //HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
-  }
-
-  /* USER CODE END StartTask06 */
-}
-
-/* USER CODE BEGIN Header_StartTask07 */
-/**
-* @brief Function implementing the myTask07 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask07 */
-void StartTask07(void *argument)
-{
-  /* USER CODE BEGIN StartTask07 */
-  /* Infinite loop */
-	/*
-	char uart_buf[50];
-		  int uart_buf_len;
-		  uint16_t timer_val;
-		  uint16_t timer_val2;
-		  // Say something
-		    uart_buf_len = sprintf(uart_buf, "Timer Test\r\n");
-		    HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
-
-		    // Start timer
-		    HAL_TIM_Base_Start(&htim10);
-
-	InitDelayTimer();
-  for(;;)
-  {
-
-
-	  timer_val = __HAL_TIM_GET_COUNTER(&htim10);
-
-	          // Wait for 50 ms
-	          //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-	  Delay_us(10000);
-	          //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-
-	          // Get time elapsed
-	          timer_val = __HAL_TIM_GET_COUNTER(&htim10) - timer_val;
-	          timer_val2 = __HAL_TIM_GET_COUNTER(&htim11);
-	          // Show elapsed time
-	          uart_buf_len = sprintf(uart_buf, "%u us\r\n", timer_val);
-	          HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
-	          uart_buf_len = sprintf(uart_buf, "CNT:%u | ARR 83\r\n\n", timer_val2);
-	          HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);*/
-	for(;;)
-	  {osDelay(1000);
-  }
-  /* USER CODE END StartTask07 */
-}
-
-/* USER CODE BEGIN Header_StartTask08Queue */
-/**
-* @brief Function implementing the myTask08Queue thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask08Queue */
-void StartTask08Queue(void *argument)
-{
-  /* USER CODE BEGIN StartTask08Queue */
-  /* Infinite loop */
-	uint32_t myMessage = 42;
-  for(;;)
-  {
-	  osStatus_t status = osMessageQueuePut(myQueue, &myMessage, 0, osWaitForever);
-	  if (status == osOK) {
-	      // El mensaje fue colocado exitosamente
-		  myMessage --;
-	  } else {
-	      // Hubo un problema al colocar el mensaje
-	  }
-
-    osDelay(1000);
-  }
-  /* USER CODE END StartTask08Queue */
-}
-
-/* USER CODE BEGIN Header_StartTask09QueueRX */
-/**
-* @brief Function implementing the myTask09QueueRX thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask09QueueRX */
-void StartTask09QueueRX(void *argument)
-{
-  /* USER CODE BEGIN StartTask09QueueRX */
-  /* Infinite loop */
-	uint32_t receivedMessage;
-	uint8_t messagePriority;
-
-	char uart_buf[30];
-	int uart_buf_len = 30;
-  for(;;)
-  {
-
-	  osStatus_t status = osMessageQueueGet(myQueue, &receivedMessage, &messagePriority, osWaitForever);
-
-	  if (status == osOK) {
-	      // Mensaje recibido exitosamente
-		  uart_buf_len = sprintf(uart_buf, "mes = %u prio = %uc\r\n", receivedMessage, messagePriority);
-		  HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
-
-	  } else {
-	      // Hubo un problema al obtener el mensaje
-	  }
-    osDelay(800);
-  }
-  /* USER CODE END StartTask09QueueRX */
-}
-
-/* USER CODE BEGIN Header_StartTask10_controlQUEUE */
-/**
-* @brief Function implementing the myTask10_contro thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask10_controlQUEUE */
-void StartTask10_controlQUEUE(void *argument)
-{
-  /* USER CODE BEGIN StartTask10_controlQUEUE */
-  /* Infinite loop */
-	uint8_t mens = 0x01;
-
-	osStatus_t status_Q_dht11_control;
-	osStatus_t status_Q_waterLevel_control;
-	osStatus_t status_Q_control_TX;
-
-	uint32_t recMsg_Q_dht11_control, recMsg_Q_waterLevel_control;
-	uint8_t priMsg_Q_dht11_control, priMsg_Q_waterLevel_control;
-
-	// Recived value
-	uint8_t temp, hum, watLev;
-
-	// envio mensaje
-	uint32_t sendMsg_Q_control_TX;
-  for(;;)
-  {
-
-	  // Recivir mensaje (RX)
-
-	  switch(mens){
-	  	  case 0x01:
-	  		  // Activar dht11
-	  		osEventFlagsSet(flag_Event, 0x01);
-	  		  // Activar waterLevel
-	  		osEventFlagsSet(flag_Event, 0x02);
-	  		// Lectura de humedity / temperature / waterLevel
-
-	  		osEventFlagsWait(flag_Event, 0x04 | 0x08, osFlagsWaitAll, osWaitForever);
-	  		status_Q_dht11_control = osMessageQueueGet(Q_dht11_control, &recMsg_Q_dht11_control, &priMsg_Q_dht11_control, osWaitForever);
-	  		status_Q_waterLevel_control = osMessageQueueGet(Q_waterLevel_control, &recMsg_Q_waterLevel_control, &priMsg_Q_waterLevel_control, osWaitForever);
-	  		if ((status_Q_dht11_control & status_Q_waterLevel_control) == osOK) {
-	  			// Todo bien leido
-	  			hum = (recMsg_Q_dht11_control & 0xFF); // 0x0a (Example)
-	  			temp = ((recMsg_Q_dht11_control>>8) & 0xFF); //0x14
-	  			watLev = (recMsg_Q_waterLevel_control & 0xFF); // 0x1e
-	  			sprintf(& recMsg_Q_control_TX,"%c%c%c%c", hum, temp, watLev, 0); // 0x001e140a (0/wat/temp/hum)
-	  			// msg enviar TX
-	  			status_Q_control_TX = osMessageQueuePut(Q_control_TX, &sendMsg_Q_control_TX, 0, osWaitForever);
-	  			if (status_Q_control_TX == osOK) {
-	  				// Bien enviado
-	  				;
-	  			}else{
-	  				// Mal enviado
-	  				;
-	  			}
-	  		}else{
-	  			;// Mala recepción
-	  		}
-
-//			  // Iniciar flag / borrar / esperar
-//			osEventFlagsSet(flag_Event, 0x01);
-//			osEventFlagsClear(flag_Event, 0x01); // Iniciar valor de flag
-//			osEventFlagsWait(flag_Event, 0x01, osFlagsWaitAll, osWaitForever);
-//			  break;
-//			osStatus_t status = osMessageQueuePut(myQueue, &myMessage, 0, osWaitForever);
-//			if (status == osOK) {;}else{;}
-//			osStatus_t status = osMessageQueueGet(myQueue, &receivedMessage, &messagePriority, osWaitForever);
-//			if (status == osOK) {;}else{;}
-
-
-	  }
-
-
-    osDelay(1);
-  }
-  /* USER CODE END StartTask10_controlQUEUE */
-}
-
-/* USER CODE BEGIN Header_StartTask11 */
-/**
-* @brief Function implementing the myTask11 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask11 */
-void StartTask11(void *argument)
-{
-  /* USER CODE BEGIN StartTask11 */
-	//////////////////////// DHT11 TASK
-  /* Infinite loop */
-	osStatus_t status_Q_dht11_control;
-
-	uint32_t sendMsg_Q_dht11_control;
-
-  for(;;)
-  {
-	  // Desbloquear lectura y humedad
-	  osEventFlagsWait(flag_Event, 0x01, osFlagsWaitAll, osWaitForever);
-	  if (DHT11_ReadData_prueba(&dht11, &humidity, &temperature) == HAL_OK) { // Se podria hacer una media de lecturas
-		  // Datos bien recividos
-		  humidity = 70; // 0x46
-		  temperature = 18; // 0x12
-		  sprintf(sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
-		  status_Q_dht11_control = osMessageQueuePut(Q_dht11_control, &sendMsg_Q_dht11_control, 0, osWaitForever);
-			if (status_Q_dht11_control == osOK) {
-				// Bien enviado
-				;
-			}else{
-				// Mal enviado
-				;
+			if (val == 1){
+				estadoActual = INIT_1;
 			}
 
+			return 1;
+			break;
 
-	  } else {
-		  ;// Datos mal leidos
+		case INIT_1:
+			//printf("Entrando en el estado INIT_1\n");
+			// Lógica de transición para pasar al estado siguiente (LECTURA)
+
+			if (val == 0){
+				if (cnt > MICROS_80US){ // 60 us seguro
+					// 80 us pasados
+					estadoActual = INIT_2;
+				}
+			}
+
+			return 2;
+			break;
+
+		case INIT_2:
+			//printf("Entrando en el estado INIT_2\n");
+			// Lógica de transición para pasar al estado siguiente (LECTURA)
+
+			if (val == 1){
+				if (cnt > MICROS_80US){ // 60 us seguro
+					// 80 us pasados
+					estadoActual = LECTURA;
+				}
+			}
+			return 3;
+			break;
+
+		case LECTURA:
+			//printf("Entrando en el estado LECTURA\n");
+			// Lógica de transición para pasar al estado siguiente (FIN)
+
+			if (val == 0){
+				if (cnt > MICROS_50US){ // 60 us seguro
+					// 50 us pasados
+					estadoActual = BIT;
+				}
+			}
+			return 4;
+			break;
+
+		case BIT:
+			//printf("Entrando en el estado BIT\n");
+			// Lógica de transición para pasar al estado siguiente (FIN)
+
+			if (val == 1){
+				estadoActual = LECTURA;
+				cnt_bit++;
+				if (cnt_bit == 40){
+					estadoActual = FIN;
+					if (cnt < MICROS_26US){
+					// 0 (30 us)
+						//printf("cnt_bit = %d , bit = %d\n", cnt_bit, 0);
+						//printf("cnt_bit = %d FIN\n", cnt_bit);
+						return 5;
+					}else{
+						// 1 (70 us)
+						//printf("cnt_bit = %d , bit = %d\n", cnt_bit, 1);
+						//printf("cnt_bit = %d FIN\n", cnt_bit);
+						return 6;
+					}
+					break;
+				}
+
+				if (cnt < MICROS_26US){
+					// 0 (30 us)
+					//printf("cnt_bit = %d , bit = %d\n", cnt_bit, 0);
+					return 5;
+				}else{
+					// 1 (70 us)
+					//printf("cnt_bit = %d , bit = %d\n", cnt_bit, 1);
+					return 6;
+				}
+			}
+
+			break;
+
+		case FIN:
+			printf("Entrando en el estado FIN\n");
+			// Lógica de transición para volver al estado inicial (INIT)
+			// Restaurar estado inicial (siguiente iteración)
+			estadoActual = STOP;
+			cnt_bit = 0;
+
+			*fin = 1;
+			return 7;
+			break;
+
+		// Otros casos y lógica de manejo de errores si es necesario
+
+		default:
+			// Manejo de un estado no esperado
+			//printf("Error: Estado no reconocido.\n");
+			return 8;
+			break;
+	}
+}
+
+void lectura_Buff(unsigned char* datos, unsigned char* data){
+	unsigned char count = 0;
+	int i = 0; // valor de array
+	int j = 0; // desplazamiento de array
+	unsigned char val = 1;
+	unsigned char val_ant = 1;
+
+	unsigned char num_pin = 0;
+	unsigned char n = 0;
+	unsigned char fin = 0;
+	for (int num = 0; num < 8*1000; num ++){
+
+		if (fin == 1){
+			// Terminar
+			break;
+		}
+
+		bit_value (num, &i, &j);
+		val = datos_value (datos[i], j);
+		//printf("num(%d) -> %d\n", num, val);
+
+		if (val == val_ant){
+			count++;
+		}else {
+			// Hay cambio de estado (implementar algoritmo)
+			//printf("val = %d, count = %d\n\n", val, count);
+			n = maquinaDeEstados(count, val_ant, &fin);
+
+			if (n == 5){ // 0
+				data[num_pin / 8] <<= 1;
+				num_pin++;
+			}else if (n == 6){ // 1
+				data[num_pin / 8] <<= 1;
+				data[num_pin / 8] |= 1;
+				num_pin++;
+			}
+
+			val_ant = val;
+			count = 1;
+		}
+	}
+}
+///// ------------------
+
+
+void DHT11_Delay(uint32_t uSeg) {
+
+	uSeg = uSeg*4;
+
+		for (uint32_t i = 0; i < uSeg; ++i) {
+	        __NOP();
+	    }
+}
+
+
+void DHT11_Init(DHT11_TypeDef* dht11) {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  //__HAL_RCC_GPIOx_CLK_ENABLE(); // Reemplaza 'x' con el puerto GPIO que estás utilizando
+
+  GPIO_InitStruct.Pin = dht11->GPIO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+
+  HAL_GPIO_Init(dht11->GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(dht11->GPIO_Port, dht11->GPIO_Pin, GPIO_PIN_SET);
+}
+
+HAL_StatusTypeDef DHT11_ReadData(DHT11_TypeDef* dht11, uint8_t* humidity, uint8_t* temperature) {
+
+  // Configurar modo salida
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Pin = dht11->GPIO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(dht11->GPIO_Port, &GPIO_InitStruct);
+
+  // Iniciar la comunicación con el sensor DHT11
+  HAL_GPIO_WritePin(dht11->GPIO_Port, dht11->GPIO_Pin, GPIO_PIN_RESET);
+  osDelay(18); // Mantén bajo durante al menos 18 ms
+
+  // Cambiar a la fase de lectura
+  HAL_GPIO_WritePin(dht11->GPIO_Port, dht11->GPIO_Pin, GPIO_PIN_SET);
+  DHT11_Delay(1); // Espera antes de leer la respuesta del sensor
+
+  // Configurar el pin como entrada
+  GPIO_InitStruct.Pin = dht11->GPIO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(dht11->GPIO_Port, &GPIO_InitStruct);
+
+  while (HAL_GPIO_ReadPin(dht11->GPIO_Port, dht11->GPIO_Pin) == GPIO_PIN_SET){
+	  DHT11_Delay(1);
+  }
+
+  DHT11_Delay(79);
+
+  //
+  while (HAL_GPIO_ReadPin(dht11->GPIO_Port, dht11->GPIO_Pin) == GPIO_PIN_RESET){
+    DHT11_Delay(1);
+  }
+
+  DHT11_Delay(79);
+
+
+  // Leer la respuesta del sensor (40 bits de datos)
+  uint8_t data[5] = {0};
+  uint8_t count_high = 0;
+  for (int i = 0; i < 40; ++i) {
+    // DHT11_Delay(50); // Espera para cada bit
+
+	  DHT11_Delay(70);
+
+    //DHT11_Delay(20);
+    // Mientras que
+    count_high  = 0;
+    while (HAL_GPIO_ReadPin(dht11->GPIO_Port, dht11->GPIO_Pin) == GPIO_PIN_SET){
+    	count_high ++;
+    	DHT11_Delay(1);
+    }
+    if (count_high > 8 ){
+    	// Bit '1' detectado
+    	data[i / 8] <<= 1;
+    	data[i / 8] |= 1; // Establece el bit menos significativo a 1
+    }else {
+    	// Bit '0' detectado
+    	data[i / 8] <<= 1; // Desplaza a la izquierda
+    }
+
+
+  }
+
+  // Verificar la suma de comprobación
+  if (data[4] == ((data[0] + data[1] + data[2] + data[3]) & 0xFF)) {
+    *humidity = data[0];
+    *temperature = data[2];
+
+    return HAL_OK;
+  } else {
+    return HAL_ERROR;
+  }
+}
+
+void grafica(DHT11_TypeDef* dht11){
+
+	uint8_t datos[500];
+
+	for (int i = 0; i < 500*8 ; i ++){
+		DHT11_Delay(1);
+		if (HAL_GPIO_ReadPin(dht11->GPIO_Port, dht11->GPIO_Pin) == GPIO_PIN_SET){
+			//datos [i] = 1;
+			datos[i / 8] |= (1 << (i % 8));
+		}else {
+			datos[i / 8] |= (1 << (i % 8));
+		}
+			//datos [i] = 0;
+
+	}
+
+	datos [9] = datos [9];
+	datos [9] = datos [9];
+	datos [9] = datos [9];
+
+	//HAL_UART_Transmit(&huart2, datos, 100, 100U);
+}
+
+
+HAL_StatusTypeDef DHT11_ReadData_prueba(DHT11_TypeDef* dht11, uint8_t* humidity, uint8_t* temperature) {
+
+	uint8_t datos[499];
+	memset(&datos, 0, sizeof(datos));
+
+  // Configurar modo salida
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Pin = dht11->GPIO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(dht11->GPIO_Port, &GPIO_InitStruct);
+
+  // Iniciar la comunicación con el sensor DHT11
+  HAL_GPIO_WritePin(dht11->GPIO_Port, dht11->GPIO_Pin, GPIO_PIN_RESET);
+  osDelay(20); // Mantén bajo durante al menos 18 ms
+
+  // Cambiar a la fase de lectura
+  HAL_GPIO_WritePin(dht11->GPIO_Port, dht11->GPIO_Pin, GPIO_PIN_SET);
+  DHT11_Delay(1); // Espera antes de leer la respuesta del sensor
+
+  // Configurar el pin como entrada
+  //GPIO_InitStruct.Pin = dht11->GPIO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  //GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(dht11->GPIO_Port, &GPIO_InitStruct);
+
+  //grafica(dht11);
+
+
+	for (int i = 0; i < 499*8 ; i ++){
+		//DHT11_Delay(1);
+
+		if (HAL_GPIO_ReadPin(dht11->GPIO_Port, dht11->GPIO_Pin) == GPIO_PIN_SET){
+			//datos [i] = 1;
+
+			datos[i/8] = datos[i/8] << 1 | 0x1;
+		}else {
+			datos[i/8] = datos[i/8] << 1;
+		}
+		__NOP();
+		__NOP();
+
+	}
+
+	uint8_t data[5] = {0};
+	lectura_Buff(datos, data);
+
+	// Verificar la suma de comprobación
+	  if (data[4] == ((data[0] + data[1] + data[2] + data[3]) & 0xFF)) {
+	    *humidity = data[0];
+	    *temperature = data[2];
+	    return HAL_OK;
+	  }else {
+		 return HAL_ERROR;
 	  }
 
-
-    osDelay(1);
-  }
-  /* USER CODE END StartTask11 */
 }
 
-/* USER CODE BEGIN Header_StartTask12 */
-/**
-* @brief Function implementing the myTask12 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask12 */
-void StartTask12(void *argument)
-{
-  /* USER CODE BEGIN StartTask12 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask12 */
+void formatSensorData(uint8_t* buffer, uint8_t hum, uint8_t tem) {
+	uint8_t label_hum[3] = "HUM";
+	uint8_t label_tem[3] = "TEM";
+    // Utiliza sprintf para formatear el valor en la cadena
+	 sprintf((char*)buffer, "%s = %02u%%  %s = %02u%%\n\r", label_hum, hum, label_tem, tem);
 }
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
-  /* USER CODE END Error_Handler_Debug */
-}
-
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
-{
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
-}
-#endif /* USE_FULL_ASSERT */
