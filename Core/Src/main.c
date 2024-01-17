@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h> // spritf
 #include <unistd.h>
 #include "dht11.h"
 #include "FreeRTOS.h"
@@ -100,10 +101,70 @@ const osThreadAttr_t myTask07_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for myTask08Queue */
+osThreadId_t myTask08QueueHandle;
+const osThreadAttr_t myTask08Queue_attributes = {
+  .name = "myTask08Queue",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for myTask09QueueRX */
+osThreadId_t myTask09QueueRXHandle;
+const osThreadAttr_t myTask09QueueRX_attributes = {
+  .name = "myTask09QueueRX",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for myTask10_contro */
+osThreadId_t myTask10_controHandle;
+const osThreadAttr_t myTask10_contro_attributes = {
+  .name = "myTask10_contro",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for myTask11 */
+osThreadId_t myTask11Handle;
+const osThreadAttr_t myTask11_attributes = {
+  .name = "myTask11",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for myTask12 */
+osThreadId_t myTask12Handle;
+const osThreadAttr_t myTask12_attributes = {
+  .name = "myTask12",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for Q_dht11_control */
+osMessageQueueId_t Q_dht11_controlHandle;
+const osMessageQueueAttr_t Q_dht11_control_attributes = {
+  .name = "Q_dht11_control"
+};
+/* Definitions for Q_waterLevel_control */
+osMessageQueueId_t Q_waterLevel_controlHandle;
+const osMessageQueueAttr_t Q_waterLevel_control_attributes = {
+  .name = "Q_waterLevel_control"
+};
+/* Definitions for Q_control_TX */
+osMessageQueueId_t Q_control_TXHandle;
+const osMessageQueueAttr_t Q_control_TX_attributes = {
+  .name = "Q_control_TX"
+};
+/* Definitions for Q_RX_control */
+osMessageQueueId_t Q_RX_controlHandle;
+const osMessageQueueAttr_t Q_RX_control_attributes = {
+  .name = "Q_RX_control"
+};
 /* USER CODE BEGIN PV */
 osEventFlagsId_t flag_Event;
 uint8_t mode = 0;
 SemaphoreHandle_t delaySemaphore;
+osMessageQueueId_t myQueue; // Mensaje para mandar datos de task8 -> task9
+
+uint8_t buffRX[8] = {0};
+uint16_t buff_len = 8;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -120,6 +181,11 @@ void StartTask04(void *argument);
 void StartTask05(void *argument);
 void StartTask06(void *argument);
 void StartTask07(void *argument);
+void StartTask08Queue(void *argument);
+void StartTask09QueueRX(void *argument);
+void StartTask10_controlQUEUE(void *argument);
+void StartTask11(void *argument);
+void StartTask12(void *argument);
 
 /* USER CODE BEGIN PFP */
 void DHT11_Delay_f(uint32_t uSeg);
@@ -186,8 +252,22 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of Q_dht11_control */
+  Q_dht11_controlHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_dht11_control_attributes);
+
+  /* creation of Q_waterLevel_control */
+  Q_waterLevel_controlHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_waterLevel_control_attributes);
+
+  /* creation of Q_control_TX */
+  Q_control_TXHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_control_TX_attributes);
+
+  /* creation of Q_RX_control */
+  Q_RX_controlHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_RX_control_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+  // Crear una cola de mensajes con capacidad para 10 mensajes, cada uno de 4 bytes
+  	  myQueue = osMessageQueueNew(10, 4, NULL);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -211,6 +291,21 @@ int main(void)
 
   /* creation of myTask07 */
   myTask07Handle = osThreadNew(StartTask07, NULL, &myTask07_attributes);
+
+  /* creation of myTask08Queue */
+  myTask08QueueHandle = osThreadNew(StartTask08Queue, NULL, &myTask08Queue_attributes);
+
+  /* creation of myTask09QueueRX */
+  myTask09QueueRXHandle = osThreadNew(StartTask09QueueRX, NULL, &myTask09QueueRX_attributes);
+
+  /* creation of myTask10_contro */
+  myTask10_controHandle = osThreadNew(StartTask10_controlQUEUE, NULL, &myTask10_contro_attributes);
+
+  /* creation of myTask11 */
+  myTask11Handle = osThreadNew(StartTask11, NULL, &myTask11_attributes);
+
+  /* creation of myTask12 */
+  myTask12Handle = osThreadNew(StartTask12, NULL, &myTask12_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -473,8 +568,20 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef * huart1){
 
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart1){
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart2){
 	//HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	osStatus_t status_Q_RX_control;
+	uint32_t sendMsg_Q_RX_control;
+	uint8_t priMsg_Q_RX_control;
+	status_Q_RX_control = osMessageQueuePut(Q_RX_controlHandle, &sendMsg_Q_RX_control, &priMsg_Q_RX_control, osWaitForever);
+	if (status_Q_RX_control == osOK) {
+		osEventFlagsSet(flag_Event, 0x20);
+	}else {
+		; // Error mesaje
+	}
+
+	// Habilitar interrupcion (8 datos salta interrupcion)
+	HAL_UART_Receive_IT(&huart2, buffRX, buff_len);
 }
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if (htim == &htim11){
@@ -559,12 +666,35 @@ void StartTask02(void *argument)
 {
   /* USER CODE BEGIN StartTask02 */
   /* Infinite loop */
-	uint8_t bufferEnvio[5] = "HOLA";
-	uint16_t tam = 5;
+	uint8_t buffTX[40] = "HOLA";
+	uint16_t buff_len = 40;
+
+	osStatus_t status_Q_control_TX;
+
+	uint32_t recMsg_Q_control_TX;
+	uint8_t priMsg_Q_control_TX;
+
+	uint8_t hum, temp, watLev;
+
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_TC);
   for(;;)
   {
-	  HAL_UART_Transmit_IT(&huart1, bufferEnvio, tam);
+
+		osEventFlagsWait(flag_Event, 0x10, osFlagsWaitAll, osWaitForever);
+		status_Q_control_TX = osMessageQueueGet(Q_control_TXHandle, &recMsg_Q_control_TX, &priMsg_Q_control_TX, osWaitForever);
+		if (status_Q_control_TX == osOK) {
+			// Mensaje bien recibido
+
+			hum = (recMsg_Q_control_TX & 0xFF);
+			temp = ((recMsg_Q_control_TX>>8) & 0xFF);
+			watLev = ((recMsg_Q_control_TX>>16) & 0xFF);
+
+			buff_len = sprintf(&buffTX, "hum %d, temp %d, watLev %d\n", hum, temp, watLev);
+			HAL_UART_Transmit(&huart2, (uint8_t *)buffTX, buff_len, 100);
+		}
+
+
+	  //HAL_UART_Transmit_IT(&huart1, bufferEnvio, tam);
     osDelay(1000);
   }
   /* USER CODE END StartTask02 */
@@ -581,13 +711,22 @@ void StartTask03(void *argument)
 {
   /* USER CODE BEGIN StartTask03 */
   /* Infinite loop */
-	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-	uint8_t rx_buff [1] ;
-	uint16_t tam = 1;
+	// La funcion " HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart1)" tiene la logica del programa
+
+	osStatus_t status_Q_RX_control;
+
+	uint32_t sendMsg_Q_RX_control;
+	uint8_t priMsg_Q_RX_control;
+
+	uint8_t codigo;
+
+	__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+	// Start interrupt reception
+	HAL_UART_Receive_IT(&huart2, buffRX, buff_len); // Variables globales cambian el funcionamiento
   for(;;)
   {
-	  HAL_UART_Receive_IT(&huart1, rx_buff, tam);
-     osDelay(1000);
+	  HAL_UART_Receive_IT(&huart2, buffRX, buff_len);
+     osDelay(100); // Cada 100 milisegundos habilita interrupción
   }
   /* USER CODE END StartTask03 */
 }
@@ -606,37 +745,37 @@ void StartTask04(void *argument)
 	uint8_t buff_erre[2] = "XX";
 		uint8_t humidity, temperature;
 		uint8_t buff_print[24] ;
-		flag_Event = osEventFlagsNew(NULL);
 
-		// Crear variable y cargar valores inicialies de puerto
-		DHT11_TypeDef dht11;
-		dht11.GPIO_Port = DHT11_GPIO_Port;  // Reemplaza 'x' con el puerto GPIO que estás utilizando
-		dht11.GPIO_Pin = DHT11_Pin;  // Reemplaza 'x' con el número del pin GPIO que estás utilizando
-		DHT11_Init(&dht11);
+
+//		// Crear variable y cargar valores inicialies de puerto
+//		DHT11_TypeDef dht11;
+//		dht11.GPIO_Port = DHT11_GPIO_Port;  // Reemplaza 'x' con el puerto GPIO que estás utilizando
+//		dht11.GPIO_Pin = DHT11_Pin;  // Reemplaza 'x' con el número del pin GPIO que estás utilizando
+//		DHT11_Init(&dht11);
 
 		osDelay(1000);
   for(;;)
   {
-	  HAL_UART_Transmit(&huart2, buff_print, 23, 10U);
-	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	  //HAL_UART_Transmit(&huart2, buff_print, 23, 10U);
+//	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+//
+//	  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+//	  	 osDelay(1000);
+//	  	 HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//	  	 osDelay(1000);
+//	  	 if (DHT11_ReadData_prueba(&dht11, &humidity, &temperature) == HAL_OK) {
+//	  		// Los datos se leyeron correctamente
+//	  		// Utiliza las variables 'humidity' y 'temperature' según tus necesidades
+//
+//	   		  formatSensorData(buff_print,  humidity,  temperature);
+//
+//	  		  //HAL_UART_Transmit(&huart2, buff_print, 23, 10U);
+//	  	  } else {
+//	  		// Hubo un error al leer los datos del sensor
+//	  		//HAL_UART_Transmit(&huart2, buff_erre, 2, 10U);
+//	  	  }
 
-	  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	  	 osDelay(1000);
-	  	 HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-	  	 osDelay(1000);
-	  	 if (DHT11_ReadData_prueba(&dht11, &humidity, &temperature) == HAL_OK) {
-	  		// Los datos se leyeron correctamente
-	  		// Utiliza las variables 'humidity' y 'temperature' según tus necesidades
-
-	   		  formatSensorData(buff_print,  humidity,  temperature);
-
-	  		  HAL_UART_Transmit(&huart2, buff_print, 23, 10U);
-	  	  } else {
-	  		// Hubo un error al leer los datos del sensor
-	  		HAL_UART_Transmit(&huart2, buff_erre, 2, 10U);
-	  	  }
-
-    osDelay(1);
+    osDelay(100);
   }
   /* USER CODE END StartTask04 */
 }
@@ -692,7 +831,8 @@ void StartTask06(void *argument)
 	  uint16_t timer_val2;
 	  // Say something
 	    uart_buf_len = sprintf(uart_buf, "Timer Test\r\n");
-	    HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
+
+	    //HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
 
 	    // Start timer
 	    HAL_TIM_Base_Start(&htim10);
@@ -716,9 +856,9 @@ void StartTask06(void *argument)
         // Show elapsed time
         HAL_TIM_Base_Stop_IT(&htim10);
         uart_buf_len = sprintf(uart_buf, "%u us\r\n", timer_val);
-        HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
+        //HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
         uart_buf_len = sprintf(uart_buf, "CNT:%u | ARR 83\r\n\n", timer_val2);
-        HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
+        //HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
   }
 
   /* USER CODE END StartTask06 */
@@ -771,6 +911,262 @@ void StartTask07(void *argument)
 	  {osDelay(1000);
   }
   /* USER CODE END StartTask07 */
+}
+
+/* USER CODE BEGIN Header_StartTask08Queue */
+/**
+* @brief Function implementing the myTask08Queue thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask08Queue */
+void StartTask08Queue(void *argument)
+{
+  /* USER CODE BEGIN StartTask08Queue */
+  /* Infinite loop */
+	uint32_t myMessage = 42;
+  for(;;)
+  {
+	  osStatus_t status = osMessageQueuePut(myQueue, &myMessage, 0, osWaitForever);
+	  if (status == osOK) {
+	      // El mensaje fue colocado exitosamente
+		  myMessage --;
+	  } else {
+	      // Hubo un problema al colocar el mensaje
+	  }
+
+    osDelay(1000);
+  }
+  /* USER CODE END StartTask08Queue */
+}
+
+/* USER CODE BEGIN Header_StartTask09QueueRX */
+/**
+* @brief Function implementing the myTask09QueueRX thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask09QueueRX */
+void StartTask09QueueRX(void *argument)
+{
+  /* USER CODE BEGIN StartTask09QueueRX */
+  /* Infinite loop */
+	uint32_t receivedMessage;
+	uint8_t messagePriority;
+
+	char uart_buf[30];
+	int uart_buf_len = 30;
+  for(;;)
+  {
+
+	  osStatus_t status = osMessageQueueGet(myQueue, &receivedMessage, &messagePriority, osWaitForever);
+
+	  if (status == osOK) {
+	      // Mensaje recibido exitosamente
+		  uart_buf_len = sprintf(uart_buf, "mes = %u prio = %uc\r\n", receivedMessage, messagePriority);
+		  HAL_UART_Transmit(&huart2, (uint8_t *)uart_buf, uart_buf_len, 100);
+
+	  } else {
+	      // Hubo un problema al obtener el mensaje
+	  }
+    osDelay(800);
+  }
+  /* USER CODE END StartTask09QueueRX */
+}
+
+/* USER CODE BEGIN Header_StartTask10_controlQUEUE */
+/**
+* @brief Function implementing the myTask10_contro thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask10_controlQUEUE */
+void StartTask10_controlQUEUE(void *argument)
+{
+  /* USER CODE BEGIN StartTask10_controlQUEUE */
+  /* Infinite loop */
+	flag_Event = osEventFlagsNew(NULL);
+
+	uint8_t cod = 0x01;
+
+	osStatus_t status_Q_RX_control;
+	osStatus_t status_Q_dht11_control;
+	osStatus_t status_Q_waterLevel_control;
+	osStatus_t status_Q_control_TX;
+
+	uint32_t recMsg_Q_RX_control;
+	uint8_t priMsg_Q_RX_control;
+
+	uint32_t recMsg_Q_dht11_control, recMsg_Q_waterLevel_control;
+	uint8_t priMsg_Q_dht11_control, priMsg_Q_waterLevel_control;
+
+	// Recived value
+	uint8_t temp, hum, watLev;
+
+	// envio mensaje
+	uint32_t sendMsg_Q_control_TX;
+  for(;;)
+  {
+
+	  // Recivir mensaje (RX)
+	  osEventFlagsWait(flag_Event, 0x20, osFlagsWaitAll, osWaitForever);
+	  status_Q_RX_control = osMessageQueueGet(Q_RX_controlHandle, &recMsg_Q_RX_control, &priMsg_Q_waterLevel_control, osWaitForever);
+	  if (status_Q_RX_control == osOK) {
+     	 // Todo bien leido
+		  cod = (recMsg_Q_RX_control >> 24) & 0xFF;
+
+		  switch(cod){
+			  case 'a': // Valor de codigo que se necesite ajustar
+				  // Activar dht11
+				osEventFlagsSet(flag_Event, 0x01);
+				  // Activar waterLevel
+				osEventFlagsSet(flag_Event, 0x02);
+				// Lectura de humedity / temperature / waterLevel
+
+				osEventFlagsWait(flag_Event, 0x04 | 0x08, osFlagsWaitAll, osWaitForever);
+				status_Q_dht11_control = osMessageQueueGet(Q_dht11_controlHandle, &recMsg_Q_dht11_control, &priMsg_Q_dht11_control, osWaitForever);
+				status_Q_waterLevel_control = osMessageQueueGet(Q_waterLevel_controlHandle, &recMsg_Q_waterLevel_control, &priMsg_Q_waterLevel_control, osWaitForever);
+				if ((status_Q_dht11_control & status_Q_waterLevel_control) == osOK) {
+					// Todo bien leido
+					hum = (recMsg_Q_dht11_control & 0xFF); // 0x0a (Example)
+					temp = ((recMsg_Q_dht11_control>>8) & 0xFF); //0x14
+					watLev = (recMsg_Q_waterLevel_control & 0xFF); // 0x1e
+					sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", hum, temp, watLev, 0); // 0x001e140a (0/wat/temp/hum)
+					// msg enviar TX
+					status_Q_control_TX = osMessageQueuePut(Q_control_TXHandle, &sendMsg_Q_control_TX, 0, osWaitForever);
+					if (status_Q_control_TX == osOK) {
+						// Avisar TASK
+						osEventFlagsSet(flag_Event, 0x10);
+						// Bien enviado
+						;
+					}else{
+						// Mal enviado
+						;
+					}
+				}else{
+					;// Mala recepción
+				}
+
+
+
+			  }
+		}else {
+		  ;  // Error
+		}
+
+
+	  	//			  // Iniciar flag / borrar / esperar
+	  	//			osEventFlagsSet(flag_Event, 0x01);
+	  	//			osEventFlagsClear(flag_Event, 0x01); // Iniciar valor de flag
+	  	//			osEventFlagsWait(flag_Event, 0x01, osFlagsWaitAll, osWaitForever);
+	  	//			  break;
+	  	//			osStatus_t status = osMessageQueuePut(myQueue, &myMessage, 0, osWaitForever);
+	  	//			if (status == osOK) {;}else{;}
+	  	//			osStatus_t status = osMessageQueueGet(myQueue, &receivedMessage, &messagePriority, osWaitForever);
+	  	//			if (status == osOK) {;}else{;}
+
+	  osDelay(100);
+  }
+  /* USER CODE END StartTask10_controlQUEUE */
+}
+
+/* USER CODE BEGIN Header_StartTask11 */
+/**
+* @brief Function implementing the myTask11 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask11 */
+void StartTask11(void *argument)
+{
+  /* USER CODE BEGIN StartTask11 */
+	//////////////////////// DHT11 TASK
+  /* Infinite loop */
+
+	// Crear variable y cargar valores inicialies de puerto
+	DHT11_TypeDef dht11;
+	dht11.GPIO_Port = DHT11_GPIO_Port;  // Reemplaza 'x' con el puerto GPIO que estás utilizando
+	dht11.GPIO_Pin = DHT11_Pin;  // Reemplaza 'x' con el número del pin GPIO que estás utilizando
+	DHT11_Init(&dht11);
+
+	osStatus_t status_Q_dht11_control;
+
+	uint32_t sendMsg_Q_dht11_control;
+
+	uint8_t humidity, temperature;
+
+  for(;;)
+  {
+	  // Desbloquear lectura y humedad
+	  osEventFlagsWait(flag_Event, 0x01, osFlagsWaitAll, osWaitForever);
+	  //if (DHT11_ReadData_prueba(&dht11, &humidity, &temperature) == HAL_OK) { // Se podria hacer una media de lecturas
+	  	if (1){
+	  	  // Datos bien recividos
+		  humidity = 70; // 0x46
+		  temperature = 18; // 0x12
+		  sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+		  status_Q_dht11_control = osMessageQueuePut(Q_dht11_controlHandle, &sendMsg_Q_dht11_control, 0, osWaitForever);
+			if (status_Q_dht11_control == osOK) {
+				// Bien enviado
+				osEventFlagsSet(flag_Event, 0x04);
+			}else{
+				// Mal enviado
+				;
+			}
+
+
+	  } else {
+		  ;// Datos mal leidos
+	  }
+
+
+    osDelay(1);
+  }
+  /* USER CODE END StartTask11 */
+}
+
+/* USER CODE BEGIN Header_StartTask12 */
+/**
+* @brief Function implementing the myTask12 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask12 */
+void StartTask12(void *argument)
+{
+  /* USER CODE BEGIN StartTask12 */
+  /* Infinite loop */
+	osStatus_t status_Q_waterLevel_control;
+
+	uint32_t sendMsg_Q_waterLevel_control;
+
+	uint32_t potWaterLevel;
+	uint8_t waterLevel;
+
+	for(;;)
+	{
+		// Desbloquear lectura y humedad
+		osEventFlagsWait(flag_Event, 0x02, osFlagsWaitAll, osWaitForever);
+		// Posible hacer mas medidas de una y hacer media
+		//potWaterLevel = readAnalogA0 (); // Falta por implementar
+		//waterLevel = getWaterLevel (potWaterLevel);
+		waterLevel = 60;
+
+		  sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+		  status_Q_waterLevel_control = osMessageQueuePut(Q_waterLevel_controlHandle, &sendMsg_Q_waterLevel_control, 0, osWaitForever);
+			if (status_Q_waterLevel_control == osOK) {
+				// Bien enviado
+				osEventFlagsSet(flag_Event, 0x08);
+			}else{
+				// Mal enviado
+				;
+			}
+
+
+
+		osDelay(1);
+	}
+  /* USER CODE END StartTask12 */
 }
 
 /**
