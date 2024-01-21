@@ -1,0 +1,861 @@
+19:50:06 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'start_uart_TX_task':
+../Core/Src/main.c:606:18: warning: unused variable 'timer_val' [-Wunused-variable]
+  606 |         uint16_t timer_val;
+      |                  ^~~~~~~~~
+../Core/Src/main.c:603:36: warning: variable 'watArea' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                                    ^~~~~~~
+../Core/Src/main.c:603:28: warning: variable 'watLev' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                            ^~~~~~
+../Core/Src/main.c:603:22: warning: variable 'temp' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                      ^~~~
+../Core/Src/main.c:603:17: warning: variable 'hum' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                 ^~~
+../Core/Src/main.c:598:18: warning: unused variable 'buff_len' [-Wunused-variable]
+  598 |         uint16_t buff_len;
+      |                  ^~~~~~~~
+../Core/Src/main.c:597:17: warning: unused variable 'buffTX' [-Wunused-variable]
+  597 |         uint8_t buffTX [40];
+      |                 ^~~~~~
+../Core/Src/main.c:593:20: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  593 |         osStatus_t status_Q_control_TX;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_uart_RX_task':
+../Core/Src/main.c:709:35: warning: initializer-string for array of 'unsigned char' is too long
+  709 |         unsigned char buffRX[2] = "FFFFFF\0";
+      |                                   ^~~~~~~~~~
+../Core/Src/main.c:749:43: warning: format '%X' expects argument of type 'unsigned int *', but argument 3 has type 'uint32_t *' {aka 'long unsigned int *'} [-Wformat=]
+  749 |                 sscanf((char*)buffRX, "%02X", &auxDelay);
+      |                                        ~~~^   ~~~~~~~~~
+      |                                           |   |
+      |                                           |   uint32_t * {aka long unsigned int *}
+      |                                           unsigned int *
+      |                                        %02lX
+../Core/Src/main.c:728:18: warning: unused variable 'buff_lenTX' [-Wunused-variable]
+  728 |         uint16_t buff_lenTX = 6;
+      |                  ^~~~~~~~~~
+../Core/Src/main.c:727:23: warning: unused variable 'buffTX' [-Wunused-variable]
+  727 |         unsigned char buffTX[20];
+      |                       ^~~~~~
+../Core/Src/main.c:725:18: warning: unused variable 'sendMsg_Q_RX_control' [-Wunused-variable]
+  725 |         uint32_t sendMsg_Q_RX_control;
+      |                  ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:724:20: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  724 |         osStatus_t status_Q_RX_control;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:717:17: warning: unused variable 'estado' [-Wunused-variable]
+  717 |         uint8_t estado = 0;
+      |                 ^~~~~~
+../Core/Src/main.c:713:17: warning: unused variable 'err' [-Wunused-variable]
+  713 |         uint8_t err;
+      |                 ^~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:845:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:794:26: warning: unused variable '_buff_len' [-Wunused-variable]
+  794 |                 uint16_t _buff_len;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:793:25: warning: unused variable '_buffTX' [-Wunused-variable]
+  793 |                 uint8_t _buffTX [40];
+      |                         ^~~~~~~
+../Core/Src/main.c:792:26: warning: unused variable 'timer_val' [-Wunused-variable]
+  792 |                 uint16_t timer_val;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:781:25: warning: unused variable 'priMsg_Q_RX_control' [-Wunused-variable]
+  781 |                 uint8_t priMsg_Q_RX_control;
+      |                         ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:780:26: warning: unused variable 'recMsg_Q_RX_control' [-Wunused-variable]
+  780 |                 uint32_t recMsg_Q_RX_control;
+      |                          ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:778:28: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  778 |                 osStatus_t status_Q_control_TX;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:777:28: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  777 |                 osStatus_t status_Q_waterLevel_control;
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:775:28: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  775 |                 osStatus_t status_Q_RX_control;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:773:25: warning: unused variable 'cod' [-Wunused-variable]
+  773 |                 uint8_t cod = 0x01;
+      |                         ^~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:910:19: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:885:30: warning: variable 'auxTemperature' set but not used [-Wunused-but-set-variable]
+  885 |         uint8_t auxHumidity, auxTemperature;
+      |                              ^~~~~~~~~~~~~~
+../Core/Src/main.c:885:17: warning: variable 'auxHumidity' set but not used [-Wunused-but-set-variable]
+  885 |         uint8_t auxHumidity, auxTemperature;
+      |                 ^~~~~~~~~~~
+../Core/Src/main.c:881:20: warning: variable 'status_Q_dht11_control' set but not used [-Wunused-but-set-variable]
+  881 |         osStatus_t status_Q_dht11_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:951:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:932:20: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  932 |         osStatus_t status_Q_waterLevel_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:845:59: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                                                           ^
+../Core/Src/main.c:845:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:910:54: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                                                      ^
+../Core/Src/main.c:910:11: note: 'sprintf' output 5 bytes into a destination of size 4
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:951:67: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                                                                   ^
+../Core/Src/main.c:951:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  42968	    116	  21028	  64112	   fa70	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+19:50:10 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  42968	    116	  21028	  64112	   fa70	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+19:51:11 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'start_uart_TX_task':
+../Core/Src/main.c:606:18: warning: unused variable 'timer_val' [-Wunused-variable]
+  606 |         uint16_t timer_val;
+      |                  ^~~~~~~~~
+../Core/Src/main.c:603:36: warning: variable 'watArea' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                                    ^~~~~~~
+../Core/Src/main.c:603:28: warning: variable 'watLev' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                            ^~~~~~
+../Core/Src/main.c:603:22: warning: variable 'temp' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                      ^~~~
+../Core/Src/main.c:603:17: warning: variable 'hum' set but not used [-Wunused-but-set-variable]
+  603 |         uint8_t hum, temp, watLev, watArea;
+      |                 ^~~
+../Core/Src/main.c:598:18: warning: unused variable 'buff_len' [-Wunused-variable]
+  598 |         uint16_t buff_len;
+      |                  ^~~~~~~~
+../Core/Src/main.c:597:17: warning: unused variable 'buffTX' [-Wunused-variable]
+  597 |         uint8_t buffTX [40];
+      |                 ^~~~~~
+../Core/Src/main.c:593:20: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  593 |         osStatus_t status_Q_control_TX;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_uart_RX_task':
+../Core/Src/main.c:709:35: warning: initializer-string for array of 'unsigned char' is too long
+  709 |         unsigned char buffRX[2] = "FFFFFF\0";
+      |                                   ^~~~~~~~~~
+../Core/Src/main.c:749:43: warning: format '%X' expects argument of type 'unsigned int *', but argument 3 has type 'uint32_t *' {aka 'long unsigned int *'} [-Wformat=]
+  749 |                 sscanf((char*)buffRX, "%02X", &auxDelay);
+      |                                        ~~~^   ~~~~~~~~~
+      |                                           |   |
+      |                                           |   uint32_t * {aka long unsigned int *}
+      |                                           unsigned int *
+      |                                        %02lX
+../Core/Src/main.c:728:18: warning: unused variable 'buff_lenTX' [-Wunused-variable]
+  728 |         uint16_t buff_lenTX = 6;
+      |                  ^~~~~~~~~~
+../Core/Src/main.c:727:23: warning: unused variable 'buffTX' [-Wunused-variable]
+  727 |         unsigned char buffTX[20];
+      |                       ^~~~~~
+../Core/Src/main.c:725:18: warning: unused variable 'sendMsg_Q_RX_control' [-Wunused-variable]
+  725 |         uint32_t sendMsg_Q_RX_control;
+      |                  ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:724:20: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  724 |         osStatus_t status_Q_RX_control;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:717:17: warning: unused variable 'estado' [-Wunused-variable]
+  717 |         uint8_t estado = 0;
+      |                 ^~~~~~
+../Core/Src/main.c:713:17: warning: unused variable 'err' [-Wunused-variable]
+  713 |         uint8_t err;
+      |                 ^~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:845:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:794:26: warning: unused variable '_buff_len' [-Wunused-variable]
+  794 |                 uint16_t _buff_len;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:793:25: warning: unused variable '_buffTX' [-Wunused-variable]
+  793 |                 uint8_t _buffTX [40];
+      |                         ^~~~~~~
+../Core/Src/main.c:792:26: warning: unused variable 'timer_val' [-Wunused-variable]
+  792 |                 uint16_t timer_val;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:781:25: warning: unused variable 'priMsg_Q_RX_control' [-Wunused-variable]
+  781 |                 uint8_t priMsg_Q_RX_control;
+      |                         ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:780:26: warning: unused variable 'recMsg_Q_RX_control' [-Wunused-variable]
+  780 |                 uint32_t recMsg_Q_RX_control;
+      |                          ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:778:28: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  778 |                 osStatus_t status_Q_control_TX;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:777:28: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  777 |                 osStatus_t status_Q_waterLevel_control;
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:775:28: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  775 |                 osStatus_t status_Q_RX_control;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:773:25: warning: unused variable 'cod' [-Wunused-variable]
+  773 |                 uint8_t cod = 0x01;
+      |                         ^~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:910:19: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:885:30: warning: variable 'auxTemperature' set but not used [-Wunused-but-set-variable]
+  885 |         uint8_t auxHumidity, auxTemperature;
+      |                              ^~~~~~~~~~~~~~
+../Core/Src/main.c:885:17: warning: variable 'auxHumidity' set but not used [-Wunused-but-set-variable]
+  885 |         uint8_t auxHumidity, auxTemperature;
+      |                 ^~~~~~~~~~~
+../Core/Src/main.c:881:20: warning: variable 'status_Q_dht11_control' set but not used [-Wunused-but-set-variable]
+  881 |         osStatus_t status_Q_dht11_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:951:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:932:20: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  932 |         osStatus_t status_Q_waterLevel_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:845:59: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                                                           ^
+../Core/Src/main.c:845:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:910:54: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                                                      ^
+../Core/Src/main.c:910:11: note: 'sprintf' output 5 bytes into a destination of size 4
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:951:67: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                                                                   ^
+../Core/Src/main.c:951:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  42968	    116	  21028	  64112	   fa70	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+19:51:17 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  42968	    116	  21028	  64112	   fa70	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+19:51:35 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  42968	    116	  21028	  64112	   fa70	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+19:52:19 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'start_uart_TX_task':
+../Core/Src/main.c:606:18: warning: unused variable 'timer_val' [-Wunused-variable]
+  606 |         uint16_t timer_val;
+      |                  ^~~~~~~~~
+../Core/Src/main.c:593:20: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  593 |         osStatus_t status_Q_control_TX;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_uart_RX_task':
+../Core/Src/main.c:709:35: warning: initializer-string for array of 'unsigned char' is too long
+  709 |         unsigned char buffRX[2] = "FFFFFF\0";
+      |                                   ^~~~~~~~~~
+../Core/Src/main.c:749:43: warning: format '%X' expects argument of type 'unsigned int *', but argument 3 has type 'uint32_t *' {aka 'long unsigned int *'} [-Wformat=]
+  749 |                 sscanf((char*)buffRX, "%02X", &auxDelay);
+      |                                        ~~~^   ~~~~~~~~~
+      |                                           |   |
+      |                                           |   uint32_t * {aka long unsigned int *}
+      |                                           unsigned int *
+      |                                        %02lX
+../Core/Src/main.c:728:18: warning: unused variable 'buff_lenTX' [-Wunused-variable]
+  728 |         uint16_t buff_lenTX = 6;
+      |                  ^~~~~~~~~~
+../Core/Src/main.c:727:23: warning: unused variable 'buffTX' [-Wunused-variable]
+  727 |         unsigned char buffTX[20];
+      |                       ^~~~~~
+../Core/Src/main.c:725:18: warning: unused variable 'sendMsg_Q_RX_control' [-Wunused-variable]
+  725 |         uint32_t sendMsg_Q_RX_control;
+      |                  ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:724:20: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  724 |         osStatus_t status_Q_RX_control;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:717:17: warning: unused variable 'estado' [-Wunused-variable]
+  717 |         uint8_t estado = 0;
+      |                 ^~~~~~
+../Core/Src/main.c:713:17: warning: unused variable 'err' [-Wunused-variable]
+  713 |         uint8_t err;
+      |                 ^~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:845:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:794:26: warning: unused variable '_buff_len' [-Wunused-variable]
+  794 |                 uint16_t _buff_len;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:793:25: warning: unused variable '_buffTX' [-Wunused-variable]
+  793 |                 uint8_t _buffTX [40];
+      |                         ^~~~~~~
+../Core/Src/main.c:792:26: warning: unused variable 'timer_val' [-Wunused-variable]
+  792 |                 uint16_t timer_val;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:781:25: warning: unused variable 'priMsg_Q_RX_control' [-Wunused-variable]
+  781 |                 uint8_t priMsg_Q_RX_control;
+      |                         ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:780:26: warning: unused variable 'recMsg_Q_RX_control' [-Wunused-variable]
+  780 |                 uint32_t recMsg_Q_RX_control;
+      |                          ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:778:28: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  778 |                 osStatus_t status_Q_control_TX;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:777:28: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  777 |                 osStatus_t status_Q_waterLevel_control;
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:775:28: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  775 |                 osStatus_t status_Q_RX_control;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:773:25: warning: unused variable 'cod' [-Wunused-variable]
+  773 |                 uint8_t cod = 0x01;
+      |                         ^~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:910:19: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:885:30: warning: variable 'auxTemperature' set but not used [-Wunused-but-set-variable]
+  885 |         uint8_t auxHumidity, auxTemperature;
+      |                              ^~~~~~~~~~~~~~
+../Core/Src/main.c:885:17: warning: variable 'auxHumidity' set but not used [-Wunused-but-set-variable]
+  885 |         uint8_t auxHumidity, auxTemperature;
+      |                 ^~~~~~~~~~~
+../Core/Src/main.c:881:20: warning: variable 'status_Q_dht11_control' set but not used [-Wunused-but-set-variable]
+  881 |         osStatus_t status_Q_dht11_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:951:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:932:20: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  932 |         osStatus_t status_Q_waterLevel_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:845:59: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                                                           ^
+../Core/Src/main.c:845:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  845 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:910:54: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                                                      ^
+../Core/Src/main.c:910:11: note: 'sprintf' output 5 bytes into a destination of size 4
+  910 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:951:67: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                                                                   ^
+../Core/Src/main.c:951:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  951 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  43524	    116	  21028	  64668	   fc9c	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+19:54:50 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'start_uart_TX_task':
+../Core/Src/main.c:606:18: warning: unused variable 'timer_val' [-Wunused-variable]
+  606 |         uint16_t timer_val;
+      |                  ^~~~~~~~~
+../Core/Src/main.c:593:20: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  593 |         osStatus_t status_Q_control_TX;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_uart_RX_task':
+../Core/Src/main.c:709:35: warning: initializer-string for array of 'unsigned char' is too long
+  709 |         unsigned char buffRX[2] = "FFFFFF\0";
+      |                                   ^~~~~~~~~~
+../Core/Src/main.c:749:43: warning: format '%X' expects argument of type 'unsigned int *', but argument 3 has type 'uint32_t *' {aka 'long unsigned int *'} [-Wformat=]
+  749 |                 sscanf((char*)buffRX, "%02X", &auxDelay);
+      |                                        ~~~^   ~~~~~~~~~
+      |                                           |   |
+      |                                           |   uint32_t * {aka long unsigned int *}
+      |                                           unsigned int *
+      |                                        %02lX
+../Core/Src/main.c:728:18: warning: unused variable 'buff_lenTX' [-Wunused-variable]
+  728 |         uint16_t buff_lenTX = 6;
+      |                  ^~~~~~~~~~
+../Core/Src/main.c:727:23: warning: unused variable 'buffTX' [-Wunused-variable]
+  727 |         unsigned char buffTX[20];
+      |                       ^~~~~~
+../Core/Src/main.c:725:18: warning: unused variable 'sendMsg_Q_RX_control' [-Wunused-variable]
+  725 |         uint32_t sendMsg_Q_RX_control;
+      |                  ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:724:20: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  724 |         osStatus_t status_Q_RX_control;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:717:17: warning: unused variable 'estado' [-Wunused-variable]
+  717 |         uint8_t estado = 0;
+      |                 ^~~~~~
+../Core/Src/main.c:713:17: warning: unused variable 'err' [-Wunused-variable]
+  713 |         uint8_t err;
+      |                 ^~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:847:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  847 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:794:26: warning: unused variable '_buff_len' [-Wunused-variable]
+  794 |                 uint16_t _buff_len;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:793:25: warning: unused variable '_buffTX' [-Wunused-variable]
+  793 |                 uint8_t _buffTX [40];
+      |                         ^~~~~~~
+../Core/Src/main.c:792:26: warning: unused variable 'timer_val' [-Wunused-variable]
+  792 |                 uint16_t timer_val;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:781:25: warning: unused variable 'priMsg_Q_RX_control' [-Wunused-variable]
+  781 |                 uint8_t priMsg_Q_RX_control;
+      |                         ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:780:26: warning: unused variable 'recMsg_Q_RX_control' [-Wunused-variable]
+  780 |                 uint32_t recMsg_Q_RX_control;
+      |                          ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:778:28: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  778 |                 osStatus_t status_Q_control_TX;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:775:28: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  775 |                 osStatus_t status_Q_RX_control;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:773:25: warning: unused variable 'cod' [-Wunused-variable]
+  773 |                 uint8_t cod = 0x01;
+      |                         ^~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:912:19: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  912 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:887:30: warning: variable 'auxTemperature' set but not used [-Wunused-but-set-variable]
+  887 |         uint8_t auxHumidity, auxTemperature;
+      |                              ^~~~~~~~~~~~~~
+../Core/Src/main.c:887:17: warning: variable 'auxHumidity' set but not used [-Wunused-but-set-variable]
+  887 |         uint8_t auxHumidity, auxTemperature;
+      |                 ^~~~~~~~~~~
+../Core/Src/main.c:883:20: warning: variable 'status_Q_dht11_control' set but not used [-Wunused-but-set-variable]
+  883 |         osStatus_t status_Q_dht11_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:953:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  953 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:934:20: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  934 |         osStatus_t status_Q_waterLevel_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:847:59: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  847 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                                                           ^
+../Core/Src/main.c:847:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  847 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:912:54: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  912 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                                                      ^
+../Core/Src/main.c:912:11: note: 'sprintf' output 5 bytes into a destination of size 4
+  912 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:953:67: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  953 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                                                                   ^
+../Core/Src/main.c:953:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  953 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+20:02:52 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'start_uart_TX_task':
+../Core/Src/main.c:606:18: warning: unused variable 'timer_val' [-Wunused-variable]
+  606 |         uint16_t timer_val;
+      |                  ^~~~~~~~~
+../Core/Src/main.c:593:20: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  593 |         osStatus_t status_Q_control_TX;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_uart_RX_task':
+../Core/Src/main.c:709:35: warning: initializer-string for array of 'unsigned char' is too long
+  709 |         unsigned char buffRX[2] = "FFFFFF\0";
+      |                                   ^~~~~~~~~~
+../Core/Src/main.c:749:43: warning: format '%X' expects argument of type 'unsigned int *', but argument 3 has type 'uint32_t *' {aka 'long unsigned int *'} [-Wformat=]
+  749 |                 sscanf((char*)buffRX, "%02X", &auxDelay);
+      |                                        ~~~^   ~~~~~~~~~
+      |                                           |   |
+      |                                           |   uint32_t * {aka long unsigned int *}
+      |                                           unsigned int *
+      |                                        %02lX
+../Core/Src/main.c:728:18: warning: unused variable 'buff_lenTX' [-Wunused-variable]
+  728 |         uint16_t buff_lenTX = 6;
+      |                  ^~~~~~~~~~
+../Core/Src/main.c:727:23: warning: unused variable 'buffTX' [-Wunused-variable]
+  727 |         unsigned char buffTX[20];
+      |                       ^~~~~~
+../Core/Src/main.c:725:18: warning: unused variable 'sendMsg_Q_RX_control' [-Wunused-variable]
+  725 |         uint32_t sendMsg_Q_RX_control;
+      |                  ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:724:20: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  724 |         osStatus_t status_Q_RX_control;
+      |                    ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:717:17: warning: unused variable 'estado' [-Wunused-variable]
+  717 |         uint8_t estado = 0;
+      |                 ^~~~~~
+../Core/Src/main.c:713:17: warning: unused variable 'err' [-Wunused-variable]
+  713 |         uint8_t err;
+      |                 ^~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:847:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  847 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:794:26: warning: unused variable '_buff_len' [-Wunused-variable]
+  794 |                 uint16_t _buff_len;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:793:25: warning: unused variable '_buffTX' [-Wunused-variable]
+  793 |                 uint8_t _buffTX [40];
+      |                         ^~~~~~~
+../Core/Src/main.c:792:26: warning: unused variable 'timer_val' [-Wunused-variable]
+  792 |                 uint16_t timer_val;
+      |                          ^~~~~~~~~
+../Core/Src/main.c:781:25: warning: unused variable 'priMsg_Q_RX_control' [-Wunused-variable]
+  781 |                 uint8_t priMsg_Q_RX_control;
+      |                         ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:780:26: warning: unused variable 'recMsg_Q_RX_control' [-Wunused-variable]
+  780 |                 uint32_t recMsg_Q_RX_control;
+      |                          ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:778:28: warning: variable 'status_Q_control_TX' set but not used [-Wunused-but-set-variable]
+  778 |                 osStatus_t status_Q_control_TX;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:775:28: warning: unused variable 'status_Q_RX_control' [-Wunused-variable]
+  775 |                 osStatus_t status_Q_RX_control;
+      |                            ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:773:25: warning: unused variable 'cod' [-Wunused-variable]
+  773 |                 uint8_t cod = 0x01;
+      |                         ^~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:912:19: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  912 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:887:30: warning: variable 'auxTemperature' set but not used [-Wunused-but-set-variable]
+  887 |         uint8_t auxHumidity, auxTemperature;
+      |                              ^~~~~~~~~~~~~~
+../Core/Src/main.c:887:17: warning: variable 'auxHumidity' set but not used [-Wunused-but-set-variable]
+  887 |         uint8_t auxHumidity, auxTemperature;
+      |                 ^~~~~~~~~~~
+../Core/Src/main.c:883:20: warning: variable 'status_Q_dht11_control' set but not used [-Wunused-but-set-variable]
+  883 |         osStatus_t status_Q_dht11_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:953:27: warning: passing argument 1 of 'sprintf' from incompatible pointer type [-Wincompatible-pointer-types]
+  953 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           uint32_t * {aka long unsigned int *}
+In file included from ../Core/Src/main.c:25:
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/stdio.h:254:18: note: expected 'char * restrict' but argument is of type 'uint32_t *' {aka 'long unsigned int *'}
+  254 | int     sprintf (char *__restrict, const char *__restrict, ...)
+      |                  ^
+../Core/Src/main.c:934:20: warning: variable 'status_Q_waterLevel_control' set but not used [-Wunused-but-set-variable]
+  934 |         osStatus_t status_Q_waterLevel_control;
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_control_task':
+../Core/Src/main.c:847:59: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  847 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                                                           ^
+../Core/Src/main.c:847:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  847 |                   sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_dht11_task':
+../Core/Src/main.c:912:54: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  912 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |                                                      ^
+../Core/Src/main.c:912:11: note: 'sprintf' output 5 bytes into a destination of size 4
+  912 |           sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'start_waterLavel_task':
+../Core/Src/main.c:953:67: warning: 'sprintf' writing a terminating nul past the end of the destination [-Wformat-overflow=]
+  953 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                                                                   ^
+../Core/Src/main.c:953:19: note: 'sprintf' output 5 bytes into a destination of size 4
+  953 |                   sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+20:03:19 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+20:03:23 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+20:20:50 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/dht11.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/dht11.d" -MT"Core/Src/dht11.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/dht11.o"
+../Core/Src/dht11.c: In function 'DHT11_ReadData':
+../Core/Src/dht11.c:359:3: error: 'GPIO_InitStruct' undeclared (first use in this function)
+  359 |   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+      |   ^~~~~~~~~~~~~~~
+../Core/Src/dht11.c:359:3: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/dht11.c: In function 'maquinaDeEstados':
+../Core/Src/dht11.c:172:1: warning: control reaches end of non-void function [-Wreturn-type]
+  172 | }
+      | ^
+make: *** [Core/Src/subdir.mk:43: Core/Src/dht11.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+20:20:56 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/dht11.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/dht11.d" -MT"Core/Src/dht11.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/dht11.o"
+../Core/Src/dht11.c: In function 'DHT11_ReadData':
+../Core/Src/dht11.c:359:3: error: 'GPIO_InitStruct' undeclared (first use in this function)
+  359 |   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+      |   ^~~~~~~~~~~~~~~
+../Core/Src/dht11.c:359:3: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/dht11.c: In function 'maquinaDeEstados':
+../Core/Src/dht11.c:172:1: warning: control reaches end of non-void function [-Wreturn-type]
+  172 | }
+      | ^
+make: *** [Core/Src/subdir.mk:43: Core/Src/dht11.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+20:22:27 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/dht11.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/dht11.d" -MT"Core/Src/dht11.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/dht11.o"
+../Core/Src/dht11.c: In function 'maquinaDeEstados':
+../Core/Src/dht11.c:172:1: warning: control reaches end of non-void function [-Wreturn-type]
+  172 | }
+      | ^
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+20:23:36 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/dht11.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/dht11.d" -MT"Core/Src/dht11.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/dht11.o"
+../Core/Src/dht11.c: In function 'maquinaDeEstados':
+../Core/Src/dht11.c:172:1: warning: control reaches end of non-void function [-Wreturn-type]
+  172 | }
+      | ^
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+20:28:52 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+20:36:25 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/dht11.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/dht11.d" -MT"Core/Src/dht11.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/dht11.o"
+../Core/Src/dht11.c: In function 'maquinaDeEstados':
+../Core/Src/dht11.c:172:1: warning: control reaches end of non-void function [-Wreturn-type]
+  172 | }
+      | ^
+arm-none-eabi-gcc -o "fin_Tiempo_Real.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fin_Tiempo_Real.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: fin_Tiempo_Real.elf
+ 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+arm-none-eabi-objdump -h -S fin_Tiempo_Real.elf  > "fin_Tiempo_Real.list"
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+Finished building: fin_Tiempo_Real.list
+ 
+20:36:45 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 

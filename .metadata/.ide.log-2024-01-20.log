@@ -1,0 +1,76 @@
+2024-01-21 00:51:54,106 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 714816688 Bytes (1073741824)
+2024-01-21 00:51:55,351 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 737911080 Bytes (1073741824)
+2024-01-21 00:51:58,183 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 887043216 Bytes (1073741824)
+2024-01-21 00:51:59,790 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-01-21 00:51:59,790 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: FREERTOS
+2024-01-21 00:51:59,790 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: USART
+2024-01-21 00:51:59,790 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-01-21 00:51:59,791 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-01-21 00:51:59,791 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-01-21 00:51:59,792 [INFO] CodeGenerator:807 - code generatio: config db path: C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.common.mx_6.10.0.202311202037\\db\
+2024-01-21 00:51:59,927 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\license.tmp_save
+2024-01-21 00:52:00,101 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\license.tmp
+2024-01-21 00:52:00,134 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\gpio.tmp_save
+2024-01-21 00:52:00,232 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\gpio.tmp
+2024-01-21 00:52:00,417 [INFO] Middleware:1439 - No code input for Bsp Dependency
+2024-01-21 00:52:00,428 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_inc.tmp_save
+2024-01-21 00:52:00,519 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_inc.tmp
+2024-01-21 00:52:00,526 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelInit.tmp_save
+2024-01-21 00:52:00,598 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelInit.tmp
+2024-01-21 00:52:00,606 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelStart.tmp_save
+2024-01-21 00:52:00,669 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelStart.tmp
+2024-01-21 00:52:00,677 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_typedefs.tmp_save
+2024-01-21 00:52:00,825 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_typedefs.tmp
+2024-01-21 00:52:00,831 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_vars.tmp_save
+2024-01-21 00:52:00,915 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_vars.tmp
+2024-01-21 00:52:00,922 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_pfp.tmp_save
+2024-01-21 00:52:01,003 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_pfp.tmp
+2024-01-21 00:52:01,011 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_obj_creat.tmp_save
+2024-01-21 00:52:01,102 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_obj_creat.tmp
+2024-01-21 00:52:01,109 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_default_thread.tmp_save
+2024-01-21 00:52:01,184 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_default_thread.tmp
+2024-01-21 00:52:01,191 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_threads.tmp_save
+2024-01-21 00:52:01,266 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_threads.tmp
+2024-01-21 00:52:01,281 [INFO] Middleware:1439 - No code input for Bsp Dependency
+2024-01-21 00:52:01,297 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_inc.tmp_save
+2024-01-21 00:52:01,375 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_inc.tmp
+2024-01-21 00:52:01,383 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelInit.tmp_save
+2024-01-21 00:52:01,454 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelInit.tmp
+2024-01-21 00:52:01,463 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelStart.tmp_save
+2024-01-21 00:52:01,522 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_kernelStart.tmp
+2024-01-21 00:52:01,532 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_typedefs.tmp_save
+2024-01-21 00:52:01,590 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_typedefs.tmp
+2024-01-21 00:52:01,606 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_vars.tmp_save
+2024-01-21 00:52:01,667 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_vars.tmp
+2024-01-21 00:52:01,678 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_pfp.tmp_save
+2024-01-21 00:52:01,739 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_pfp.tmp
+2024-01-21 00:52:01,755 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_obj_creat.tmp_save
+2024-01-21 00:52:01,818 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_obj_creat.tmp
+2024-01-21 00:52:01,827 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_default_thread.tmp_save
+2024-01-21 00:52:01,885 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_default_thread.tmp
+2024-01-21 00:52:01,896 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_threads.tmp_save
+2024-01-21 00:52:01,958 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\rtos_threads.tmp
+2024-01-21 00:52:01,983 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\FreeRTOSConfig.h_save
+2024-01-21 00:52:02,070 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\FreeRTOSConfig.h
+2024-01-21 00:52:02,092 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\freertos.c_save
+2024-01-21 00:52:02,165 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\freertos.c
+2024-01-21 00:52:02,204 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\stm32f4xx_it.c_save
+2024-01-21 00:52:02,386 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\stm32f4xx_it.c
+2024-01-21 00:52:02,406 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\stm32f4xx_it.h_save
+2024-01-21 00:52:02,592 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\stm32f4xx_it.h
+2024-01-21 00:52:02,637 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\stm32f4xx_hal_msp.c_save
+2024-01-21 00:52:02,824 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\stm32f4xx_hal_msp.c
+2024-01-21 00:52:02,833 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\system.tmp_save
+2024-01-21 00:52:02,953 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\MXTmpFiles\system.tmp
+2024-01-21 00:52:02,988 [INFO] CodeEngine:311 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\stm32f4xx_hal_conf.h_save
+2024-01-21 00:52:03,101 [INFO] CodeEngine:335 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\stm32f4xx_hal_conf.h
+2024-01-21 00:52:03,173 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\main.h_save
+2024-01-21 00:52:03,277 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Inc\main.h
+2024-01-21 00:52:03,296 [INFO] CodeEngine:255 - oldGeneratedFile, C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\main.c_save
+2024-01-21 00:52:03,464 [INFO] CodeEngine:279 - Generated code: C:\Users\pabme\OneDrive\Escritorio\MASTER\final\fin_Tiempo_Real\Core\Src\main.c
+2024-01-21 00:52:04,580 [INFO] ProjectBuilder:3076 - Time for Copy HAL[1] : 662mS.
+2024-01-21 00:52:04,587 [INFO] ProjectBuilder:4485 - Project Generator version: 4.2.0-B44
+2024-01-21 00:52:04,930 [INFO] ConfigFileManager:1495 - The Die is : DIE431
+2024-01-21 00:52:07,023 [INFO] ProjectBuilder:4747 - Time for Generating toolchain IDE Files: 2436mS.
+2024-01-21 00:52:07,024 [INFO] ProjectBuilder:2947 - Time for Copy CMSIS : 1mS.
+2024-01-21 00:52:07,038 [INFO] ProjectBuilder:2947 - Time for Copy CMSIS : 0mS.

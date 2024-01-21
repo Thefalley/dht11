@@ -1,0 +1,10 @@
+20:36:45 **** Incremental Build of configuration Debug for project fin_Tiempo_Real ****
+make -j8 all 
+arm-none-eabi-size  fin_Tiempo_Real.elf 
+   text	   data	    bss	    dec	    hex	filename
+  43540	    116	  21028	  64684	   fcac	fin_Tiempo_Real.elf
+Finished building: default.size.stdout
+ 
+
+20:36:46 Build Finished. 0 errors, 0 warnings. (took 649ms)
+
