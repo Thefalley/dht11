@@ -1,0 +1,917 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "cmsis_os.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include <string.h>
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim10;
+
+UART_HandleTypeDef huart2;
+
+/* Definitions for uart_TX_task */
+osThreadId_t uart_TX_taskHandle;
+const osThreadAttr_t uart_TX_task_attributes = {
+  .name = "uart_TX_task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for uart_RX_task */
+osThreadId_t uart_RX_taskHandle;
+const osThreadAttr_t uart_RX_task_attributes = {
+  .name = "uart_RX_task",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for control_task */
+osThreadId_t control_taskHandle;
+const osThreadAttr_t control_task_attributes = {
+  .name = "control_task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for dht11_task */
+osThreadId_t dht11_taskHandle;
+const osThreadAttr_t dht11_task_attributes = {
+  .name = "dht11_task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for waterLavel_task */
+osThreadId_t waterLavel_taskHandle;
+const osThreadAttr_t waterLavel_task_attributes = {
+  .name = "waterLavel_task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for lcd_task */
+osThreadId_t lcd_taskHandle;
+const osThreadAttr_t lcd_task_attributes = {
+  .name = "lcd_task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for emptyDrum_task */
+osThreadId_t emptyDrum_taskHandle;
+const osThreadAttr_t emptyDrum_task_attributes = {
+  .name = "emptyDrum_task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Q_control_TX */
+osMessageQueueId_t Q_control_TXHandle;
+const osMessageQueueAttr_t Q_control_TX_attributes = {
+  .name = "Q_control_TX"
+};
+/* Definitions for Q_RX_control */
+osMessageQueueId_t Q_RX_controlHandle;
+const osMessageQueueAttr_t Q_RX_control_attributes = {
+  .name = "Q_RX_control"
+};
+/* Definitions for Q_dht11_control */
+osMessageQueueId_t Q_dht11_controlHandle;
+const osMessageQueueAttr_t Q_dht11_control_attributes = {
+  .name = "Q_dht11_control"
+};
+/* Definitions for Q_waterLevel_control */
+osMessageQueueId_t Q_waterLevel_controlHandle;
+const osMessageQueueAttr_t Q_waterLevel_control_attributes = {
+  .name = "Q_waterLevel_control"
+};
+/* Definitions for mutex_waterArea */
+osMutexId_t mutex_waterAreaHandle;
+const osMutexAttr_t mutex_waterArea_attributes = {
+  .name = "mutex_waterArea"
+};
+/* Definitions for mutex_delayTrasmit */
+osMutexId_t mutex_delayTrasmitHandle;
+const osMutexAttr_t mutex_delayTrasmit_attributes = {
+  .name = "mutex_delayTrasmit"
+};
+/* Definitions for myEventFlag */
+osEventFlagsId_t myEventFlagHandle;
+const osEventFlagsAttr_t myEventFlag_attributes = {
+  .name = "myEventFlag"
+};
+/* USER CODE BEGIN PV */
+uint8_t WaterArea;
+uint8_t delayTrasmit;
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_TIM10_Init(void);
+void start_uart_TX_task(void *argument);
+void start_uart_RX_task(void *argument);
+void start_control_task(void *argument);
+void start_dht11_task(void *argument);
+void start_waterLavel_task(void *argument);
+void start_lcd_task(void *argument);
+void start_emptyDrum_task(void *argument);
+
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_USART2_UART_Init();
+  MX_TIM10_Init();
+  /* USER CODE BEGIN 2 */
+
+  /* USER CODE END 2 */
+
+  /* Init scheduler */
+  osKernelInitialize();
+  /* Create the mutex(es) */
+  /* creation of mutex_waterArea */
+  mutex_waterAreaHandle = osMutexNew(&mutex_waterArea_attributes);
+
+  /* creation of mutex_delayTrasmit */
+  mutex_delayTrasmitHandle = osMutexNew(&mutex_delayTrasmit_attributes);
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of Q_control_TX */
+  Q_control_TXHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_control_TX_attributes);
+
+  /* creation of Q_RX_control */
+  Q_RX_controlHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_RX_control_attributes);
+
+  /* creation of Q_dht11_control */
+  Q_dht11_controlHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_dht11_control_attributes);
+
+  /* creation of Q_waterLevel_control */
+  Q_waterLevel_controlHandle = osMessageQueueNew (3, sizeof(uint32_t), &Q_waterLevel_control_attributes);
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of uart_TX_task */
+  uart_TX_taskHandle = osThreadNew(start_uart_TX_task, NULL, &uart_TX_task_attributes);
+
+  /* creation of uart_RX_task */
+  uart_RX_taskHandle = osThreadNew(start_uart_RX_task, NULL, &uart_RX_task_attributes);
+
+  /* creation of control_task */
+  control_taskHandle = osThreadNew(start_control_task, NULL, &control_task_attributes);
+
+  /* creation of dht11_task */
+  dht11_taskHandle = osThreadNew(start_dht11_task, NULL, &dht11_task_attributes);
+
+  /* creation of waterLavel_task */
+  waterLavel_taskHandle = osThreadNew(start_waterLavel_task, NULL, &waterLavel_task_attributes);
+
+  /* creation of lcd_task */
+  lcd_taskHandle = osThreadNew(start_lcd_task, NULL, &lcd_task_attributes);
+
+  /* creation of emptyDrum_task */
+  emptyDrum_taskHandle = osThreadNew(start_emptyDrum_task, NULL, &emptyDrum_task_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* creation of myEventFlag */
+  myEventFlagHandle = osEventFlagsNew(&myEventFlag_attributes);
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = 16;
+  RCC_OscInitStruct.PLL.PLLN = 336;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief TIM10 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM10_Init(void)
+{
+
+  /* USER CODE BEGIN TIM10_Init 0 */
+
+  /* USER CODE END TIM10_Init 0 */
+
+  /* USER CODE BEGIN TIM10_Init 1 */
+
+  /* USER CODE END TIM10_Init 1 */
+  htim10.Instance = TIM10;
+  htim10.Init.Prescaler = 42000;
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim10.Init.Period = 65535;
+  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM10_Init 2 */
+
+  /* USER CODE END TIM10_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : B1_Pin */
+  GPIO_InitStruct.Pin = B1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LD2_Pin */
+  GPIO_InitStruct.Pin = LD2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
+}
+
+/* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart2){
+	osEventFlagsSet(myEventFlagHandle, 0x100);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if (GPIO_Pin == B1_Pin){
+		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		//osEventFlagsSet(myEventFlagHandle, 0x1000);
+		///0x20 (Se puede usar para debugear)
+		osEventFlagsSet(myEventFlagHandle, 0x20);
+	}
+}
+
+uint8_t leerWaterArea(){
+	uint8_t auxWaterArea;
+	osMutexAcquire(mutex_waterAreaHandle, 0U);
+	auxWaterArea = WaterArea; // Leer variable global
+	osMutexRelease(mutex_waterAreaHandle);
+	return auxWaterArea;
+}
+
+void escribirWaterArea(uint8_t auxWaterArea){
+	osMutexAcquire(mutex_waterAreaHandle, 0U);
+	WaterArea = auxWaterArea; // Escribir variable global
+	osMutexRelease(mutex_waterAreaHandle);
+}
+
+uint8_t leerDelay(){
+	uint8_t auxdelayTrasmit;
+	osMutexAcquire(mutex_delayTrasmitHandle, 0U);
+	auxdelayTrasmit = delayTrasmit; // Leer variable global
+	osMutexRelease(mutex_delayTrasmitHandle);
+	return auxdelayTrasmit;
+}
+
+void escribirDelay(uint8_t auxdelayTrasmit){
+	osMutexAcquire(mutex_delayTrasmitHandle, 0U);
+	delayTrasmit = auxdelayTrasmit; // Escribir variable global
+	osMutexRelease(mutex_delayTrasmitHandle);
+}
+
+/* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_start_uart_TX_task */
+/**
+  * @brief  Function implementing the uart_TX_task thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_start_uart_TX_task */
+void start_uart_TX_task(void *argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+	osStatus_t status_Q_control_TX;
+	uint32_t recMsg_Q_control_TX;
+	uint8_t priMsg_Q_control_TX;
+
+	uint8_t buffTX [40];
+	uint16_t buff_len;
+
+	uint8_t auxDelay = 1000 ;
+	escribirDelay(auxDelay);
+
+	uint8_t hum, temp, watLev, watArea;
+
+  for(;;)
+  {
+	  osEventFlagsSet(myEventFlagHandle, 0x20);
+	  osEventFlagsWait(myEventFlagHandle, 0x10, osFlagsWaitAll, osWaitForever);
+	  osEventFlagsClear(myEventFlagHandle, 0x10);
+
+	  // Leer Queue
+	  status_Q_control_TX = osMessageQueueGet(Q_control_TXHandle, &recMsg_Q_control_TX, &priMsg_Q_control_TX, osWaitForever);
+
+
+	  // Interpretar Queue
+	  watArea  = (recMsg_Q_control_TX & 0xFF);
+	  temp = ((recMsg_Q_control_TX & 0xFF00) >> 8);
+	  hum = ((recMsg_Q_control_TX & 0xFF0000) >> 16);
+	  watLev = ((recMsg_Q_control_TX & 0xFF000000) >> 24);
+
+	  // Recibir delay
+	  auxDelay = leerDelay();
+
+	  // Mandar mensaje (Definir como mandar datos)
+	  buff_len = sprintf((char*)buffTX, "watArea %d, hum %d, temp %d, watLev %d\n\r", watArea, hum, temp, watLev);
+	  HAL_UART_Transmit(&huart2, (uint8_t *)buffTX, buff_len, 100);
+
+	  // Cumplir delay especificado
+	  osDelay(auxDelay);
+
+
+
+
+
+//
+//		if (status_Q_control_TX == osOK) {
+//			// Mensaje bien recibido
+//
+//
+//
+//			buff_len = sprintf((char*)buffTX, "hum %d, temp %d, watLev %d\n\r", hum, temp, watLev);
+//			HAL_UART_Transmit(&huart2, (uint8_t *)buffTX, buff_len, 100);
+//		}
+
+		osDelay(100);
+  }
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_start_uart_RX_task */
+/**
+* @brief Function implementing the uart_RX_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_start_uart_RX_task */
+void start_uart_RX_task(void *argument)
+{
+  /* USER CODE BEGIN start_uart_RX_task */
+  /* Infinite loop */
+	unsigned char buffRX[6] = "FFFFFF\0";
+	uint16_t buff_len = 6;
+	memset(buffRX, '\0', buff_len);
+
+	uint8_t err;
+
+	uint32_t auxDelay = 1000;
+	escribirDelay(auxDelay);
+
+
+	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+	//HAL_UART_Receive_IT(&huart2, buffRX, buff_len); // Variables globales cambian el funcionamiento
+
+	osStatus_t status_Q_RX_control;
+	uint32_t sendMsg_Q_RX_control;
+
+	unsigned char buffTX[20];
+	uint16_t buff_lenTX = 6;
+
+
+	osDelay(1000);
+
+	for(;;)
+	  {
+
+		// Esperar que alguien se conecte
+
+	    HAL_UART_Receive_IT(&huart2, buffRX, buff_len);
+	    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	    memset(buffRX, '\0', buff_len);
+		osEventFlagsWait(myEventFlagHandle, 0x100, osFlagsWaitAll, osWaitForever);
+		osEventFlagsClear(myEventFlagHandle, 0x100);
+	    // 5 s -> 0x001388
+		// 1 s -> 0x0003E8
+
+		sscanf(buffRX, "%6x",(unsigned int*) &auxDelay);
+
+		while(1){
+
+			HAL_UART_Receive_IT(&huart2, buffRX, buff_len);
+
+			// Esperar mensaje
+			auxDelay = 10000; //Esto se tendra que quitar mas adelante (Aplica un delay de este margen
+			memset(buffRX, '\0', buff_len);
+			err = osEventFlagsWait(myEventFlagHandle, 0x100, osFlagsWaitAll, auxDelay-500);
+
+			// Gestion de recivir mensaje
+			if (err == 0){
+				// Mensaje recibido
+				osEventFlagsClear(myEventFlagHandle, 0x100);
+				sscanf(buffRX, "%6x",(unsigned int*) &auxDelay);
+
+				buff_lenTX = sprintf((char*)buffTX, "Mensaje recivido  delay %d\n\r", auxDelay);
+				HAL_UART_Transmit(&huart2, (uint8_t *)buffTX, buff_lenTX, 100);
+
+
+				if (auxDelay < 500){
+					// Romper bucle para volver a conectar
+					break;
+				}
+
+			}else {// if (err == -2){
+				// Delay superado (NO MENSAJE)
+				HAL_UART_AbortReceive_IT(&huart2);
+
+				buff_lenTX = sprintf((char*)buffTX, "Tiempo superado  delay %d\n\r", delay_ms);
+				HAL_UART_Transmit(&huart2, (uint8_t *)buffTX, buff_lenTX, 100);
+			}
+
+			// Cargar codig
+			sendMsg_Q_RX_control = 0x01;
+			status_Q_RX_control = osMessageQueuePut(Q_RX_controlHandle, &sendMsg_Q_RX_control, 0, osWaitForever);
+			if (status_Q_RX_control == osOK){
+				osEventFlagsSet(myEventFlagHandle, 0x10);
+			}else {
+				; // Error de envio
+			}
+
+
+		}
+	  }
+
+  /* USER CODE END start_uart_RX_task */
+}
+
+/* USER CODE BEGIN Header_start_control_task */
+/**
+* @brief Function implementing the control_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_start_control_task */
+void start_control_task(void *argument)
+{
+  /* USER CODE BEGIN start_control_task */
+  /* Infinite loop */
+
+
+		uint8_t cod = 0x01;
+
+		osStatus_t status_Q_RX_control;
+		osStatus_t status_Q_dht11_control;
+		osStatus_t status_Q_waterLevel_control;
+		osStatus_t status_Q_control_TX;
+
+		uint32_t recMsg_Q_RX_control;
+		uint8_t priMsg_Q_RX_control;
+
+		uint32_t recMsg_Q_dht11_control, recMsg_Q_waterLevel_control;
+		uint8_t priMsg_Q_dht11_control, priMsg_Q_waterLevel_control;
+
+		// Recived value
+		uint8_t temp, hum, watLev, watArea;
+
+		// envio mensaje
+		uint32_t sendMsg_Q_control_TX;
+	  for(;;)
+	  {
+
+		  // Recivir mensaje (RX)
+		  osEventFlagsWait(myEventFlagHandle, 0x20, osFlagsWaitAll, osWaitForever);
+
+		  // Activar dht11
+		  osEventFlagsSet(myEventFlagHandle, 0x01);
+//  osEventFlagsWait(myEventFlagHandle, 0x04, osFlagsWaitAll, osWaitForever);
+//  osEventFlagsClear(myEventFlagHandle, 0x04);
+		  status_Q_dht11_control = osMessageQueueGet(Q_dht11_controlHandle, &recMsg_Q_dht11_control, &priMsg_Q_dht11_control, osWaitForever);
+
+		  // Activar waterLevel
+		  osEventFlagsSet(myEventFlagHandle, 0x02);
+//		  osEventFlagsWait(myEventFlagHandle, 0x08, osFlagsWaitAll, osWaitForever);
+//		  osEventFlagsClear(myEventFlagHandle, 0x08);
+		  status_Q_waterLevel_control = osMessageQueueGet(Q_waterLevel_controlHandle, &recMsg_Q_waterLevel_control, &priMsg_Q_waterLevel_control, osWaitForever);
+
+
+		  // Lectura de humedity / temperature / waterLevel / waterArea
+		  hum = (recMsg_Q_dht11_control & 0xFF); // 0x0a (Example)
+		  temp = ((recMsg_Q_dht11_control & 0xFF00) >> 8); //((recMsg_Q_dht11_control>>8) & 0xFF); //0x14
+		  watLev = (recMsg_Q_waterLevel_control & 0xFF); // valor Nivel Agua
+		  watArea = leerWaterArea(); // ml/s
+
+// Debugear
+//  temp = 11;
+//  hum = 22;
+//  watLev = 33;
+//  watArea = 44;
+
+		  sprintf(& sendMsg_Q_control_TX,"%c%c%c%c", watArea, hum, temp, watLev); // 0x001e140a (watlevel/temp/hum/watArea)
+		  status_Q_control_TX = osMessageQueuePut(Q_control_TXHandle, &sendMsg_Q_control_TX, 0, osWaitForever);
+		  osEventFlagsSet(myEventFlagHandle, 0x10);
+
+
+	  }
+
+
+  /* USER CODE END start_control_task */
+}
+
+/* USER CODE BEGIN Header_start_dht11_task */
+/**
+* @brief Function implementing the dht11_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_start_dht11_task */
+void start_dht11_task(void *argument)
+{
+  /* USER CODE BEGIN start_dht11_task */
+  /* Infinite loop */
+
+
+//	// Crear variable y cargar valores inicialies de puerto
+//	DHT11_TypeDef dht11;
+//	dht11.GPIO_Port = DHT11_GPIO_Port;  // Reemplaza 'x' con el puerto GPIO que estás utilizando
+//	dht11.GPIO_Pin = DHT11_Pin;  // Reemplaza 'x' con el número del pin GPIO que estás utilizando
+//	DHT11_Init(&dht11);
+
+	osStatus_t status_Q_dht11_control;
+
+	uint32_t sendMsg_Q_dht11_control;
+
+	uint8_t humidity, temperature;
+
+  for(;;)
+  {
+
+	  osEventFlagsWait(myEventFlagHandle, 0x01, osFlagsWaitAll, osWaitForever);
+	  osEventFlagsClear(myEventFlagHandle, 0x01);
+
+	  // if (DHT11_ReadData_prueba(&dht11, &humidity, &temperature) == HAL_OK) {
+
+	  humidity = 70; // 0x46
+	  temperature = 18; // 0x12
+	  sprintf(&sendMsg_Q_dht11_control, "%c%c%c%c", humidity, temperature, 0, 0); // 0x00001246 (0/0/temp/hum)
+	  status_Q_dht11_control = osMessageQueuePut(Q_dht11_controlHandle, &sendMsg_Q_dht11_control, 0, osWaitForever);
+
+	  //osEventFlagsSet(myEventFlagHandle, 0x04);
+
+	  osDelay(100);
+  }
+  /* USER CODE END start_dht11_task */
+}
+
+/* USER CODE BEGIN Header_start_waterLavel_task */
+/**
+* @brief Function implementing the waterLavel_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_start_waterLavel_task */
+void start_waterLavel_task(void *argument)
+{
+  /* USER CODE BEGIN start_waterLavel_task */
+  /* Infinite loop */
+
+	osStatus_t status_Q_waterLevel_control;
+
+	uint32_t sendMsg_Q_waterLevel_control;
+
+	uint32_t potWaterLevel;
+	uint8_t waterLevel;
+
+	 for(;;)
+	  {
+
+		  osEventFlagsWait(myEventFlagHandle, 0x02, osFlagsWaitAll, osWaitForever);
+		  osEventFlagsClear(myEventFlagHandle, 0x02);
+
+		  // Posible hacer mas medidas de una y hacer media
+		  //potWaterLevel = readAnalogA0 (); // Falta por implementar
+		  //waterLevel = getWaterLevel (potWaterLevel);
+		  waterLevel = 60;
+
+		  sprintf(&sendMsg_Q_waterLevel_control, "%c%c%c%c", waterLevel, 0, 0, 0); //(0/0/0/watLev)
+		  status_Q_waterLevel_control = osMessageQueuePut(Q_waterLevel_controlHandle, &sendMsg_Q_waterLevel_control, 0, osWaitForever);
+
+		  //osEventFlagsSet(myEventFlagHandle, 0x08);
+
+		  osDelay(100);
+	  }
+
+
+  /* USER CODE END start_waterLavel_task */
+}
+
+/* USER CODE BEGIN Header_start_lcd_task */
+/**
+* @brief Function implementing the lcd_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_start_lcd_task */
+void start_lcd_task(void *argument)
+{
+  /* USER CODE BEGIN start_lcd_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(100);
+  }
+  /* USER CODE END start_lcd_task */
+}
+
+/* USER CODE BEGIN Header_start_emptyDrum_task */
+/**
+* @brief Function implementing the emptyDrum_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_start_emptyDrum_task */
+void start_emptyDrum_task(void *argument)
+{
+  /* USER CODE BEGIN start_emptyDrum_task */
+	uint16_t timer_val;
+		uint8_t auxWaterArea;
+
+	//	unsigned char buffTX[20];
+	//	uint16_t buff_lenTX = 6;
+
+		// Set Water Area
+		escribirWaterArea(0);
+	  for(;;)
+	  {
+		  // Empezar a contar
+		  __HAL_TIM_SET_COUNTER(&htim10, 0);
+		  HAL_TIM_Base_Init(&htim10);
+		  HAL_TIM_Base_Start(&htim10);
+		  timer_val = __HAL_TIM_GET_COUNTER(&htim10);
+
+		  // Wait flag
+		  osEventFlagsClear(myEventFlagHandle, 0x1000);
+		  osEventFlagsWait(myEventFlagHandle, 0x1000, osFlagsWaitAll, osWaitForever);
+		  osEventFlagsClear(myEventFlagHandle, 0x1000);
+
+		  // Get time elapsed
+		  timer_val = __HAL_TIM_GET_COUNTER(&htim10) - timer_val;
+		  // Sacar valor real en segundos (prescaler 42.000 y 84 MHz)
+		  timer_val = (uint32_t)  timer_val*0.0005;
+
+		  // Show elapsed time
+		  //HAL_TIM_Base_Stop_IT(&htim10);
+
+		  // 100 ml / s
+
+
+		  if (timer_val < 2 ){
+			  auxWaterArea = 99;
+		  }else {
+			  auxWaterArea = 100 / timer_val;
+		  }
+
+		  // Guardar valor recivido
+		  escribirWaterArea(auxWaterArea);
+
+	//	  // Para debugear
+	//	  buff_lenTX = sprintf((char*)buffTX, "waterArea %d ml/s\n\r", (unsigned int) auxWaterArea);
+	//	  HAL_UART_Transmit(&huart2, (uint8_t *)buffTX, buff_lenTX, 100);
+
+
+		  // Encender led
+
+		  osDelay(1000);
+
+		  // Apagar led
+
+
+	  }
+  /* USER CODE END start_emptyDrum_task */
+}
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */

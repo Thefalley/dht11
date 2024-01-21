@@ -1,0 +1,7 @@
+../Core/Src/dht11.c:22:6:bit_value	2
+../Core/Src/dht11.c:27:15:datos_value	2
+../Core/Src/dht11.c:49:15:maquinaDeEstados	18
+../Core/Src/dht11.c:174:6:lectura_Buff	6
+../Core/Src/dht11.c:219:6:DHT11_Delay	2
+../Core/Src/dht11.c:229:6:DHT11_Init	1
+../Core/Src/dht11.c:341:19:DHT11_ReadData	8
