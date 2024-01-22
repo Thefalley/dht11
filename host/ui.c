@@ -489,7 +489,7 @@ void* tareaLeerSerial(void* arg) {
             printf("Menu de comunicacion\n");
             printf("Bytes recibidos: %d\n", bytes_read);
             // Imprimir respuesta
-            sscanf(RX_buff, "%d %d %d %d ", &temp, &hum, &nivel, &litros);
+            sscanf(RX_buff, "%02X %02X %02X %02X ", &temp, &hum, &nivel, &litros);
             printf("Temperatura: %d ºC \n", temp);
             printf("Humedad: %d %% \n", hum);
             printf("Nivel de agua: %d %% \n", nivel);
