@@ -1,5 +1,5 @@
 # Sistema con FreeRTOS y STM32F411RE
-[![Python Version](https://img.shields.io/pypi/pyversions/nd2.svg?color=green)](https://python.org)
+[![Linux Version](https://img.shields.io/pypi/pyversions/nd2.svg?color=green)]([https://python.org](https://www.linux.org/))
 
 Este proyecto implementa un sistema mediante FreeRTOS con eficientes mecanismos de sincronización entre tareas. Se han empleado 2 mutex, 1 flag y 3 colas de mensajes para coordinar y garantizar la integridad de las operaciones entre tareas.
 
